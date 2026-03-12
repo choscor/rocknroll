@@ -7,6 +7,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +39,8 @@ export const ActionButtons = () => {
     { label: 'Cursor', icon: FileCode2 },
     { label: 'Xcode', icon: Wrench },
   ]
+  const controlButtonClass =
+    'h-8 rounded-xl border border-border/70 bg-background px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60'
 
   return (
     <>
@@ -46,15 +49,15 @@ export const ActionButtons = () => {
           render={(
             <Button
               variant="outline"
-              className="h-10 rounded-xl border border-border/80 bg-card px-4 hover:bg-muted/80"
+              className={cn(controlButtonClass, 'font-medium')}
               disabled={!activePath}
             />
           )}
         >
           <span className="inline-flex items-center gap-2">
-            <FileCode2 className="size-4" />
+            <FileCode2 className="size-3.5" />
             Open
-            <ChevronDown className="size-4 text-muted-foreground" />
+            <ChevronDown className="size-3.5 text-muted-foreground" />
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="min-w-56 rounded-2xl bg-card p-2">
@@ -83,14 +86,14 @@ export const ActionButtons = () => {
         <TooltipTrigger
           render={(
             <Button
-              variant={state.terminalPanelOpen ? 'secondary' : 'outline'}
+              variant="outline"
               size="icon"
-              className="size-10 rounded-xl"
+              className={cn(controlButtonClass, 'size-8 px-0', state.terminalPanelOpen && 'bg-muted')}
               onClick={actions.toggleTerminalPanel}
             />
           )}
         >
-          <TerminalSquare className="size-4" />
+          <TerminalSquare className="size-3.5" />
           <span className="sr-only">Toggle terminal</span>
         </TooltipTrigger>
         <TooltipContent>Toggle terminal</TooltipContent>
@@ -98,13 +101,17 @@ export const ActionButtons = () => {
 
       <Button
         type="button"
-        variant={state.diffPanelOpen ? 'secondary' : 'outline'}
+        variant="outline"
         onClick={actions.toggleDiffPanel}
-        className="h-10 rounded-xl border border-border/80 bg-card px-3 text-sm hover:bg-muted/80"
+        className={cn(
+          controlButtonClass,
+          'gap-1 px-2.5 text-xs tracking-tight',
+          state.diffPanelOpen && 'bg-muted',
+        )}
         aria-label="Toggle diff"
         title="Toggle diff"
       >
-        <GitBranchPlus className="size-4 text-muted-foreground" />
+        <GitBranchPlus className="size-3.5 text-muted-foreground" />
         <span className="text-emerald-600">+{diffStats.added}</span>
         <span className="text-red-600">-{diffStats.removed}</span>
       </Button>

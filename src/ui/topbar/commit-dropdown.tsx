@@ -22,15 +22,15 @@ export const CommitDropdown = () => {
         render={(
           <Button
             variant="outline"
-            className="h-10 rounded-xl border border-border/80 bg-card px-4 hover:bg-muted/80"
+            className="h-8 rounded-xl border border-border/70 bg-background px-3 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60"
             disabled={disabled}
           />
         )}
       >
         <span className="inline-flex items-center gap-2">
-          <GitCommitHorizontal className="size-4" />
+          <GitCommitHorizontal className="size-3.5" />
           Commit
-          <ChevronDown className="size-4 text-muted-foreground" />
+          <ChevronDown className="size-3.5 text-muted-foreground" />
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-56 rounded-2xl bg-card p-2">

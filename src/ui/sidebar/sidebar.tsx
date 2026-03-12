@@ -1,4 +1,3 @@
-import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '../../state/app-store-context'
@@ -18,11 +17,14 @@ export const Sidebar = () => {
       )}
     >
       <div className="flex h-full flex-col">
+        <div
+          className="window-drag-region h-[52px] shrink-0 border-b border-sidebar-border/70"
+          data-tauri-drag-region
+        />
+
         <div className="space-y-4 px-3 py-3">
           <SidebarNav />
         </div>
-
-        <Separator />
 
         <div className="flex items-center justify-between px-4 py-3">
           <div className="text-xs font-medium tracking-wide text-sidebar-foreground/60">
