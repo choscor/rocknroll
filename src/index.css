@@ -115,6 +115,16 @@
 }
 
 @layer utilities {
+  .window-drag-region {
+    -webkit-app-region: drag;
+    app-region: drag;
+  }
+
+  .window-no-drag {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+  }
+
   .sidebar-gradient {
     background: linear-gradient(180deg, rgba(243, 229, 238, 0.95), rgba(223, 228, 248, 0.92));
   }
