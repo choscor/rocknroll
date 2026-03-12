@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronRight, Folder, Plus } from 'lucide-react'
+import { ChevronDown, ChevronUp, Folder, Plus } from 'lucide-react'
 import {
   Collapsible,
   CollapsibleContent,
@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
 import type { ThreadLocation, Workspace } from '../../domain/contracts'
 import { useAppStore } from '../../state/app-store-context'
 import { ThreadItem } from './thread-item'
@@ -33,7 +32,7 @@ export const WorkspaceItem = ({ workspace }: WorkspaceItemProps) => {
   const [location, setLocation] = useState<ThreadLocation>('local')
 
   const isActive = state.activeWorkspaceId === workspace.id
-  const isExpanded = expanded || isActive
+  const isExpanded = expanded
   const workspaceThreads = state.threads.filter((thread) => thread.workspaceId === workspace.id)
 
   const handleWorkspaceClick = () => {
@@ -77,23 +76,22 @@ export const WorkspaceItem = ({ workspace }: WorkspaceItemProps) => {
           }
           onClick={handleWorkspaceClick}
         >
-          <ChevronRight
-            className={cn(
-              'size-4 shrink-0 text-muted-foreground transition-transform',
-              isExpanded && 'rotate-90',
-            )}
-          />
+          {isExpanded ? (
+            <ChevronUp className="size-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          )}
           <Folder
-            className={cn(
-              'size-4 shrink-0',
-              isActive ? 'text-foreground' : 'text-muted-foreground',
-            )}
+            className={
+              isActive ? 'size-4 shrink-0 text-foreground' : 'size-4 shrink-0 text-muted-foreground'
+            }
           />
           <span
-            className={cn(
-              'truncate text-sm',
-              isActive ? 'font-medium text-foreground' : 'text-muted-foreground',
-            )}
+            className={
+              isActive
+                ? 'truncate text-sm font-medium text-foreground'
+                : 'truncate text-sm text-muted-foreground'
+            }
           >
             {workspace.name}
           </span>

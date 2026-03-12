@@ -50,18 +50,22 @@ const invokeCommand = async <T>(
 }
 
 export const desktopCommands = {
-  pickFolder(): Promise<CommandResult<PickFolderResult>> {
+  async pickFolder(): Promise<CommandResult<PickFolderResult>> {
+    if (isTauriRuntime()) {
+      return invokeCommand<PickFolderResult>('pick_folder')
+    }
+
     if (typeof window === 'undefined') {
-      return Promise.resolve(runtimeUnavailableError<PickFolderResult>())
+      return runtimeUnavailableError<PickFolderResult>()
     }
 
     const picked = window.prompt('Enter workspace folder path')
-    return Promise.resolve({
+    return {
       ok: true,
       data: {
         path: picked?.trim() || null,
       },
-    })
+    }
   },
 
   openEditor(path: string): Promise<CommandResult<OpenEditorResult>> {

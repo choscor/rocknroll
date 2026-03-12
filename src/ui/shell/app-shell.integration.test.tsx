@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { renderApp } from '../../test/render-with-providers'
 
 describe('app shell integration', () => {
@@ -43,17 +43,16 @@ describe('app shell integration', () => {
     expect(await screen.findByText('rocknroll')).toBeInTheDocument()
   })
 
-  it('opens workspace modal and adds workspace from folder path', async () => {
+  it('opens native folder chooser and adds workspace from selected path', async () => {
     const user = userEvent.setup()
+    const promptSpy = vi
+      .spyOn(window, 'prompt')
+      .mockReturnValue('/workspace/new-app')
     renderApp({ initialPath: '/chat' })
 
     await user.click(await screen.findByRole('button', { name: 'Open workspace' }))
-    expect(await screen.findByText('Open Workspace')).toBeInTheDocument()
+    promptSpy.mockRestore()
 
-    const pathInput = await screen.findByLabelText('Workspace folder path')
-    await user.type(pathInput, '/workspace/new-app')
-
-    await user.click(await screen.findByRole('button', { name: 'Add workspace' }))
     expect(await screen.findByText('new-app')).toBeInTheDocument()
     expect(await screen.findByRole('status')).toHaveTextContent(
       'Workspace new-app created',
@@ -93,6 +92,40 @@ describe('app shell integration', () => {
     await user.click(await screen.findByRole('button', { name: /commit/i }))
     expect(await screen.findByText('Git actions')).toBeInTheDocument()
     expect(await screen.findByText('Create PR')).toBeInTheDocument()
+  })
+
+  it('archives a thread from the thread row', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialPath: '/chat' })
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Create thread in rocknroll' }),
+    )
+    await user.type(await screen.findByPlaceholderText('Thread title...'), 'Archive me')
+    await user.keyboard('{Enter}')
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Thread "Archive me" created')
+    await user.click(await screen.findByRole('button', { name: 'Archive Archive me' }))
+
+    expect(screen.queryByRole('button', { name: 'Archive Archive me' })).not.toBeInTheDocument()
+    expect(await screen.findByRole('status')).toHaveTextContent('Thread removed')
+  })
+
+  it('toggles workspace thread visibility', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialPath: '/chat' })
+
+    expect(await screen.findByText('Initial setup')).toBeInTheDocument()
+
+    const workspaceToggle = await screen.findByRole('button', {
+      name: /rocknroll.*main/i,
+    })
+
+    await user.click(workspaceToggle)
+    expect(screen.queryByText('Initial setup')).not.toBeInTheDocument()
+
+    await user.click(workspaceToggle)
+    expect(await screen.findByText('Initial setup')).toBeInTheDocument()
   })
 
   it('toggles terminal and diff panels with data loading', async () => {
