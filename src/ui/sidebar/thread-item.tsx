@@ -35,14 +35,14 @@ export const ThreadItem = ({ thread, workspaceId }: ThreadItemProps) => {
         className={cn(
           'h-auto flex-1 justify-start gap-2 rounded-lg px-3 py-1.5 text-left',
           isActive
-            ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-            : 'text-sidebar-foreground/70',
+            ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent/65',
         )}
       >
         <span
           className={cn(
             'truncate text-xs',
-            isActive ? 'text-foreground' : 'text-muted-foreground',
+            isActive ? 'font-medium text-sidebar-accent-foreground' : 'text-sidebar-foreground',
           )}
         >
           {thread.title}
@@ -50,7 +50,12 @@ export const ThreadItem = ({ thread, workspaceId }: ThreadItemProps) => {
         <Badge variant="outline" className="h-5 rounded-md px-1.5 text-[10px] uppercase">
           {thread.location}
         </Badge>
-        <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
+        <span
+          className={cn(
+            'ml-auto shrink-0 text-[11px]',
+            isActive ? 'text-sidebar-accent-foreground/80' : 'text-sidebar-foreground/70',
+          )}
+        >
           {formatRelativeTime(thread.updatedAt)}
         </span>
       </Button>
@@ -59,7 +64,7 @@ export const ThreadItem = ({ thread, workspaceId }: ThreadItemProps) => {
         type="button"
         size="icon-sm"
         variant="ghost"
-        className="rounded-lg text-muted-foreground hover:text-foreground"
+        className="rounded-lg text-sidebar-foreground/75 hover:text-sidebar-foreground"
         onClick={handleArchive}
         aria-label={`Archive ${thread.title}`}
         title="Archive thread"

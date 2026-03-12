@@ -61,7 +61,7 @@ export const ChatView = () => {
 
   return (
     <div className="h-full overflow-y-auto px-6 py-6">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 lg:max-w-[80%]">
         {state.messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}

@@ -54,7 +54,7 @@ export const ChatInput = () => {
 
   return (
     <div className="bg-background px-5 pb-3 pt-4">
-      <div className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto w-full max-w-5xl lg:max-w-[80%]">
         <div className="rounded-[28px] border border-border/80 bg-card px-4 py-3 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.35)]">
           <div className="flex items-start">
             <Textarea
