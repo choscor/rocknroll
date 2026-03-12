@@ -1,0 +1,282 @@
+:root {
+  --surface: #f7f6f1;
+  --surface-raised: #ffffff;
+  --surface-deep: #131a24;
+  --ink: #102029;
+  --ink-soft: #50606b;
+  --accent: #ff6f3c;
+  --accent-muted: #ffd6c7;
+  --success: #2f855a;
+  --danger: #bf2f45;
+  --border: #d3d7dd;
+  --shadow: 0 10px 25px rgba(12, 23, 38, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Avenir Next', 'Segoe UI', 'Franklin Gothic Medium', sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 20%, #ffe4d8 0%, transparent 50%),
+    radial-gradient(circle at 80% 0%, #d8e8ff 0%, transparent 40%),
+    var(--surface);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  background: linear-gradient(165deg, #0f1824 0%, #202f43 100%);
+  color: #f1f4fa;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.app-sidebar h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.app-sidebar p {
+  margin: 0;
+  color: #b6c2d3;
+  line-height: 1.4;
+}
+
+.app-sidebar nav {
+  display: grid;
+  gap: 10px;
+}
+
+.nav-link {
+  color: #d5dceb;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  border-color: #5777a8;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link-active {
+  color: #11243d;
+  background: linear-gradient(120deg, #ffd8bf 0%, #ffbc9c 100%);
+  font-weight: 700;
+}
+
+.sidebar-meta {
+  margin-top: auto;
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid #425777;
+  border-radius: 10px;
+  background: rgba(10, 16, 23, 0.4);
+}
+
+.sidebar-meta span {
+  color: #a5b3c8;
+  font-size: 0.85rem;
+}
+
+.app-main {
+  padding: 24px;
+  display: grid;
+  align-content: start;
+  gap: 20px;
+}
+
+.banner-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.banner {
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner button {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.banner-error {
+  border-color: #f6a6b2;
+  background-color: #ffeff2;
+  color: var(--danger);
+}
+
+.banner-info {
+  border-color: #b9dfc6;
+  background-color: #ebfff2;
+  color: var(--success);
+}
+
+.page {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.page h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.page p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+.grid-two {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  background: #fff;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 1px solid #c4ccd6;
+  border-radius: 10px;
+  background: #eef2f8;
+  color: var(--ink);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #7b8ca3;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button-primary {
+  background: linear-gradient(120deg, #ff9961 0%, #ff6f3c 100%);
+  color: #fff;
+  border-color: #db5f2d;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #bfc8d4;
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+small,
+.muted {
+  color: var(--ink-soft);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pill-connected {
+  background: #def5e7;
+  color: #1d6a43;
+}
+
+.pill-disconnected {
+  background: #ffe7ec;
+  color: #9c2537;
+}
+
+.history {
+  border: 1px solid #ccd4de;
+  border-radius: 10px;
+  background: #0f1824;
+  color: #d5e3f7;
+  padding: 12px;
+  min-height: 180px;
+  font-family: 'SF Mono', 'Menlo', Consolas, monospace;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    gap: 12px;
+  }
+
+  .sidebar-meta {
+    margin-top: 0;
+  }
+}

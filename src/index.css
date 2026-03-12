@@ -1,0 +1,14 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+a {
+  color: #1f4f9f;
+}
+
+h3,
+h4 {
+  margin: 0;
+}

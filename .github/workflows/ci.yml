@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Lint, test, and frontend build
+        run: npm run check
+
+      - name: Check Tauri Rust crate
+        run: cargo check --manifest-path src-tauri/Cargo.toml
