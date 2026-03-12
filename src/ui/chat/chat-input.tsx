@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, Plus } from 'lucide-react'
+import { ArrowUp, Mic, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -48,21 +48,10 @@ export const ChatInput = () => {
   }
 
   return (
-    <div className="border-t bg-background/70 px-5 pb-3 pt-4 backdrop-blur-sm">
-      <div className="mx-auto w-full max-w-4xl">
-        <div className="rounded-3xl border bg-card/90 p-3 shadow-sm">
-          <div className="flex items-end gap-2">
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              className="mb-1 shrink-0 rounded-full"
-              disabled={!state.activeThreadId}
-              title="Attach"
-            >
-              <Plus className="size-4" />
-            </Button>
-
+    <div className="border-t bg-background px-5 pb-3 pt-4">
+      <div className="mx-auto w-full max-w-5xl">
+        <div className="rounded-[28px] border border-border/80 bg-card px-4 py-3 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.35)]">
+          <div className="flex items-start gap-3">
             <Textarea
               ref={textareaRef}
               value={draft}
@@ -75,7 +64,7 @@ export const ChatInput = () => {
               }
               disabled={!state.activeThreadId}
               rows={1}
-              className="max-h-[120px] min-h-[44px] border-0 bg-transparent px-1 py-2 text-base shadow-none focus-visible:ring-0"
+              className="max-h-[180px] min-h-[56px] border-0 bg-transparent px-0 py-1 text-base shadow-none focus-visible:ring-0"
             />
 
             <Button
@@ -83,16 +72,29 @@ export const ChatInput = () => {
               onClick={handleSend}
               disabled={!draft.trim() || !state.activeThreadId}
               size="icon"
-              className="mb-1 shrink-0 rounded-full"
+              className="mt-0.5 size-9 shrink-0 rounded-full bg-black text-white hover:bg-black/85 disabled:bg-muted disabled:text-muted-foreground"
             >
               <ArrowUp className="size-4" />
               <span className="sr-only">Send</span>
             </Button>
           </div>
 
-          <Separator className="my-2" />
+          <Separator className="my-2 bg-border/70" />
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                size="icon-sm"
+                variant="ghost"
+                className="rounded-lg"
+                disabled={!state.activeThreadId}
+                title="Add photos & files"
+              >
+                <Plus className="size-4" />
+                <span className="sr-only">Add photos and files</span>
+              </Button>
+
             <Select
               value={state.modelConfig.modelId}
               onValueChange={(value) => {
@@ -144,6 +146,19 @@ export const ChatInput = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            </div>
+
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="ghost"
+              className="rounded-full text-muted-foreground"
+              title="Voice input"
+            >
+              <Mic className="size-4" />
+              <span className="sr-only">Voice input</span>
+            </Button>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import {
   ChevronDown,
   Code2,
   FileCode2,
-  GitCompare,
+  GitBranchPlus,
   TerminalSquare,
   Wrench,
 } from 'lucide-react'
@@ -38,7 +38,7 @@ export const ActionButtons = () => {
           render={(
             <Button
               variant="outline"
-              className="h-10 rounded-l-2xl rounded-r-md border-r-0 px-3"
+              className="h-10 rounded-xl border border-border/80 bg-card px-4 hover:bg-muted/80"
               disabled={!activeWorkspace}
             />
           )}
@@ -88,27 +88,18 @@ export const ActionButtons = () => {
         <TooltipContent>Toggle terminal</TooltipContent>
       </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger
-          render={(
-            <Button
-              variant={state.diffPanelOpen ? 'secondary' : 'outline'}
-              size="icon"
-              className="size-10 rounded-xl"
-              onClick={actions.toggleDiffPanel}
-            />
-          )}
-        >
-          <GitCompare className="size-4" />
-          <span className="sr-only">Toggle diff</span>
-        </TooltipTrigger>
-        <TooltipContent>Toggle diff</TooltipContent>
-      </Tooltip>
-
-      <div className="inline-flex items-center gap-1 rounded-xl border bg-card px-3 py-2 text-sm">
+      <Button
+        type="button"
+        variant={state.diffPanelOpen ? 'secondary' : 'outline'}
+        onClick={actions.toggleDiffPanel}
+        className="h-10 rounded-xl border border-border/80 bg-card px-3 text-sm hover:bg-muted/80"
+        aria-label="Toggle diff"
+        title="Toggle diff"
+      >
+        <GitBranchPlus className="size-4 text-muted-foreground" />
         <span className="text-emerald-600">+{diffStats.added}</span>
         <span className="text-red-600">-{diffStats.removed}</span>
-      </div>
+      </Button>
     </>
   )
 }

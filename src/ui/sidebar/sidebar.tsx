@@ -19,11 +19,6 @@ export const Sidebar = () => {
     >
       <div className="flex h-full flex-col">
         <div className="space-y-4 px-3 py-3">
-          <div className="flex items-center gap-2 px-1">
-            <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-            <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
-            <span className="size-2.5 rounded-full bg-[#28c840]" />
-          </div>
           <SidebarNav />
           <NewThreadButton />
         </div>
