@@ -1,6 +1,13 @@
 import type { ChatService } from '../../repository/interfaces'
 import type { ChatMessage } from '../../domain/contracts'
-import { clone, err, nowIso, ok, type MockDatabase } from './mock-database'
+import {
+  clone,
+  err,
+  nowIso,
+  ok,
+  persistDatabase,
+  type MockDatabase,
+} from './mock-database'
 
 const generateAssistantReply = (userContent: string): string => {
   if (userContent.toLowerCase().includes('hello')) {
@@ -49,6 +56,7 @@ export class MockChatService implements ChatService {
     this.db.messages.push(assistantMessage)
 
     thread.updatedAt = nowIso()
+    persistDatabase(this.db)
 
     const threadMessages = this.db.messages.filter((m) => m.threadId === threadId)
     return ok(clone(threadMessages))

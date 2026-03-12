@@ -121,6 +121,16 @@ fn resolve_cwd(cwd: Option<String>) -> PathBuf {
 }
 
 #[tauri::command]
+fn pick_folder() -> Value {
+    let selected = rfd::FileDialog::new().pick_folder();
+    let path = selected.map(|folder| folder.to_string_lossy().to_string());
+
+    command_ok(json!({
+      "path": path,
+    }))
+}
+
+#[tauri::command]
 fn open_editor(path: String) -> Value {
     command_ok(json!({
       "path": path,
@@ -434,6 +444,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            pick_folder,
             open_editor,
             git_diff,
             git_commit,

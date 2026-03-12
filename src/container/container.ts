@@ -4,7 +4,7 @@ import { isTauriRuntime } from '../infrastructure/tauri/desktop-commands'
 import { TauriTerminalService } from '../infrastructure/tauri/tauri-terminal-service'
 
 export const createContainer = (): AppServices => {
-  const services = createMockServices(createInitialDatabase())
+  const services = createMockServices(createInitialDatabase({ persist: true }))
 
   if (isTauriRuntime()) {
     services.terminal = new TauriTerminalService()

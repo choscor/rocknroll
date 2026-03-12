@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom'
+import { Archive } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Thread } from '../../domain/contracts'
@@ -16,27 +18,54 @@ export const ThreadItem = ({ thread, workspaceId }: ThreadItemProps) => {
   const isActive = state.activeThreadId === thread.id
 
   const handleClick = () => {
-    actions.setActiveThread(thread.id)
-    void actions.loadMessages(thread.id)
+    void actions.activateThread(workspaceId, thread.id)
     void navigate(`/workspace/${workspaceId}/thread/${thread.id}`)
   }
 
+  const handleArchive = () => {
+    void actions.removeThread(thread.id)
+  }
+
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleClick}
-      className={cn(
-        'h-auto w-full justify-start gap-2 rounded-lg px-3 py-1.5 text-left',
-        isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/70',
-      )}
-    >
-      <span className={cn('truncate text-xs', isActive ? 'text-foreground' : 'text-muted-foreground')}>
-        {thread.title}
-      </span>
-      <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
-        {formatRelativeTime(thread.updatedAt)}
-      </span>
-    </Button>
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleClick}
+        className={cn(
+          'h-auto flex-1 justify-start gap-2 rounded-lg px-3 py-1.5 text-left',
+          isActive
+            ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+            : 'text-sidebar-foreground/70',
+        )}
+      >
+        <span
+          className={cn(
+            'truncate text-xs',
+            isActive ? 'text-foreground' : 'text-muted-foreground',
+          )}
+        >
+          {thread.title}
+        </span>
+        <Badge variant="outline" className="h-5 rounded-md px-1.5 text-[10px] uppercase">
+          {thread.location}
+        </Badge>
+        <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
+          {formatRelativeTime(thread.updatedAt)}
+        </span>
+      </Button>
+
+      <Button
+        type="button"
+        size="icon-sm"
+        variant="ghost"
+        className="rounded-lg text-muted-foreground hover:text-foreground"
+        onClick={handleArchive}
+        aria-label={`Archive ${thread.title}`}
+        title="Archive thread"
+      >
+        <Archive className="size-3.5" />
+      </Button>
+    </div>
   )
 }

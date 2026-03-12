@@ -8,20 +8,34 @@ export const ChatView = () => {
   const { state, actions } = useAppStore()
   const { workspaceId, threadId } = useParams()
   const bottomRef = useRef<HTMLDivElement>(null)
+  const activeThread = state.threads.find((thread) => thread.id === state.activeThreadId)
 
   useEffect(() => {
+    if (workspaceId && threadId) {
+      const needsSync =
+        workspaceId !== state.activeWorkspaceId ||
+        threadId !== state.activeThreadId ||
+        activeThread?.worktreeId !== state.activeWorktreeId
+
+      if (needsSync) {
+        void actions.activateThread(workspaceId, threadId)
+      }
+      return
+    }
+
     if (workspaceId && workspaceId !== state.activeWorkspaceId) {
       actions.setActiveWorkspace(workspaceId)
       void actions.loadThreads(workspaceId)
     }
-  }, [workspaceId, state.activeWorkspaceId, actions])
-
-  useEffect(() => {
-    if (threadId && threadId !== state.activeThreadId) {
-      actions.setActiveThread(threadId)
-      void actions.loadMessages(threadId)
-    }
-  }, [threadId, state.activeThreadId, actions])
+  }, [
+    workspaceId,
+    threadId,
+    state.activeWorkspaceId,
+    state.activeThreadId,
+    state.activeWorktreeId,
+    activeThread?.worktreeId,
+    actions,
+  ])
 
   useEffect(() => {
     if (typeof bottomRef.current?.scrollIntoView === 'function') {

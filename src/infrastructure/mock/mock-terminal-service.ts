@@ -1,6 +1,13 @@
 import type { TerminalService } from '../../repository/interfaces'
 import type { TerminalSession } from '../../domain/contracts'
-import { clone, err, nowIso, ok, type MockDatabase } from './mock-database'
+import {
+  clone,
+  err,
+  nowIso,
+  ok,
+  persistDatabase,
+  type MockDatabase,
+} from './mock-database'
 
 const formatOutput = (input: string): string => {
   if (input.includes('git status')) {
@@ -50,6 +57,7 @@ export class MockTerminalService implements TerminalService {
     }
 
     this.db.terminalSessions.unshift(session)
+    persistDatabase(this.db)
     return ok(clone(session))
   }
 
@@ -78,6 +86,7 @@ export class MockTerminalService implements TerminalService {
     session.history.push(`$ ${command}`)
     session.history.push(output)
     session.lastOutput = output
+    persistDatabase(this.db)
 
     return ok(clone(session))
   }
@@ -109,6 +118,7 @@ export class MockTerminalService implements TerminalService {
     session.status = 'closed'
     session.history.push('Session closed.')
     session.lastOutput = 'Session closed.'
+    persistDatabase(this.db)
 
     return ok(clone(session))
   }

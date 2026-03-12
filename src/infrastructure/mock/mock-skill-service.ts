@@ -1,5 +1,11 @@
 import type { SkillService } from '../../repository/interfaces'
-import { clone, err, ok, type MockDatabase } from './mock-database'
+import {
+  clone,
+  err,
+  ok,
+  persistDatabase,
+  type MockDatabase,
+} from './mock-database'
 
 export class MockSkillService implements SkillService {
   constructor(private readonly db: MockDatabase) {}
@@ -15,6 +21,7 @@ export class MockSkillService implements SkillService {
     }
 
     skill.enabled = enabled
+    persistDatabase(this.db)
     return ok(clone(skill))
   }
 }

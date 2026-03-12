@@ -85,19 +85,44 @@ describe('mock service adapters', () => {
     const createResult = await workspace.create('test-project', '/workspace/test')
     expect(createResult.ok).toBe(true)
     if (!createResult.ok) throw new Error('Expected workspace creation success')
+    expect(createResult.data.localWorktreeId).toBeTruthy()
 
     const wsId = createResult.data.id
 
-    const threadResult = await thread.create(wsId, 'Test thread')
-    expect(threadResult.ok).toBe(true)
-    if (!threadResult.ok) throw new Error('Expected thread creation success')
+    const localThreadResult = await thread.create(wsId, {
+      title: 'Test thread',
+      location: 'local',
+    })
+    expect(localThreadResult.ok).toBe(true)
+    if (!localThreadResult.ok) throw new Error('Expected thread creation success')
+    expect(localThreadResult.data.location).toBe('local')
+    expect(localThreadResult.data.worktreeId).toBe(createResult.data.localWorktreeId)
+
+    const worktreeThreadResult = await thread.create(wsId, {
+      title: 'Feature branch thread',
+      location: 'worktree',
+    })
+    expect(worktreeThreadResult.ok).toBe(true)
+    if (!worktreeThreadResult.ok) throw new Error('Expected worktree thread creation success')
+    expect(worktreeThreadResult.data.location).toBe('worktree')
+    expect(worktreeThreadResult.data.worktreeId).not.toBe(createResult.data.localWorktreeId)
 
     const threadListResult = await thread.list(wsId)
     expect(threadListResult.ok).toBe(true)
     if (!threadListResult.ok) throw new Error('Expected thread list success')
-    expect(threadListResult.data.length).toBe(1)
+    expect(threadListResult.data.length).toBe(2)
 
-    const removeThreadResult = await thread.remove(threadResult.data.id)
+    const duplicateWorkspaceResult = await workspace.create(
+      'test-project-duplicate',
+      '/workspace/test',
+    )
+    expect(duplicateWorkspaceResult.ok).toBe(true)
+    if (!duplicateWorkspaceResult.ok) {
+      throw new Error('Expected duplicate workspace handling success')
+    }
+    expect(duplicateWorkspaceResult.data.id).toBe(wsId)
+
+    const removeThreadResult = await thread.remove(localThreadResult.data.id)
     expect(removeThreadResult.ok).toBe(true)
   })
 
@@ -131,5 +156,34 @@ describe('mock service adapters', () => {
     expect(toggleResult.ok).toBe(true)
     if (!toggleResult.ok) throw new Error('Expected skill toggle success')
     expect(toggleResult.data.enabled).toBe(true)
+  })
+
+  it('persists workspace and thread records when persistence is enabled', async () => {
+    const database = createInitialDatabase({ persist: true })
+    const workspace = new MockWorkspaceService(database)
+    const thread = new MockThreadService(database)
+
+    const workspaceResult = await workspace.create('persisted-project', '/workspace/persisted')
+    expect(workspaceResult.ok).toBe(true)
+    if (!workspaceResult.ok) throw new Error('Expected workspace creation success')
+
+    const threadResult = await thread.create(workspaceResult.data.id, {
+      title: 'Persisted thread',
+      location: 'worktree',
+    })
+    expect(threadResult.ok).toBe(true)
+    if (!threadResult.ok) throw new Error('Expected thread creation success')
+
+    const restored = createInitialDatabase({ persist: true })
+    const restoredWorkspace = restored.workspaces.find(
+      (item) => item.id === workspaceResult.data.id,
+    )
+    const restoredThread = restored.threads.find(
+      (item) => item.id === threadResult.data.id,
+    )
+
+    expect(restoredWorkspace).toBeTruthy()
+    expect(restoredThread?.location).toBe('worktree')
+    expect(restoredThread?.worktreeId).toBe(threadResult.data.worktreeId)
   })
 })

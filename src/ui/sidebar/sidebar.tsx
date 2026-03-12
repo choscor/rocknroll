@@ -2,7 +2,7 @@ import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '../../state/app-store-context'
-import { NewThreadButton } from './new-thread-button'
+import { OpenWorkspaceButton } from './open-workspace-button'
 import { SidebarNav } from './sidebar-nav'
 import { WorkspaceList } from './workspace-list'
 
@@ -20,15 +20,15 @@ export const Sidebar = () => {
       <div className="flex h-full flex-col">
         <div className="space-y-4 px-3 py-3">
           <SidebarNav />
-          <NewThreadButton />
         </div>
 
         <Separator />
 
-        <div className="px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-3">
           <div className="text-xs font-medium tracking-wide text-sidebar-foreground/60">
-            Threads
+            Workspaces
           </div>
+          <OpenWorkspaceButton />
         </div>
 
         <ScrollArea className="min-h-0 flex-1 px-2 pb-3">

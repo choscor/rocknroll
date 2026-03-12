@@ -1,6 +1,7 @@
 import type {
   ChatMessage,
   CommandResult,
+  CreateThreadInput,
   CreateWorktreeInput,
   GitCommitResult,
   GitDiffResult,
@@ -74,7 +75,10 @@ export interface WorkspaceService {
 
 export interface ThreadService {
   list(workspaceId: string): Promise<CommandResult<Thread[]>>
-  create(workspaceId: string, title: string): Promise<CommandResult<Thread>>
+  create(
+    workspaceId: string,
+    input: CreateThreadInput,
+  ): Promise<CommandResult<Thread>>
   remove(threadId: string): Promise<CommandResult<void>>
 }
 
