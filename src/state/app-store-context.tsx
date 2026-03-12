@@ -40,6 +40,7 @@ export interface AppActions {
   createPullRequest(title: string, body: string): Promise<void>
   createTerminalSession(): Promise<void>
   sendTerminalInput(sessionId: string, input: string): Promise<void>
+  resizeTerminalSession(sessionId: string, cols: number, rows: number): Promise<void>
   closeTerminalSession(sessionId: string): Promise<void>
   clearBanners(): void
   loadWorkspaces(): Promise<void>
@@ -283,9 +284,19 @@ export const AppStoreProvider = ({
       },
 
       async createTerminalSession() {
+        const existingOpenSession = state.terminalSessions.find(
+          (session) => session.status === 'open',
+        )
+        if (existingOpenSession) {
+          return
+        }
+
         const activeResult = activeWorktreeRequired(state.activeWorktreeId)
         handleResult(activeResult, async (worktreeId) => {
-          const result = await resolvedServices.terminal.createSession(worktreeId)
+          const activeWorktree = state.worktrees.find((worktree) => worktree.id === worktreeId)
+          const result = await resolvedServices.terminal.createSession(worktreeId, {
+            cwd: activeWorktree?.path,
+          })
           handleResult(result, (session: TerminalSession) => {
             dispatch({ type: 'upsertTerminalSession', payload: session })
             setInfo(`Started terminal session ${session.id}.`)
@@ -295,6 +306,13 @@ export const AppStoreProvider = ({
 
       async sendTerminalInput(sessionId, input) {
         const result = await resolvedServices.terminal.writeToSession(sessionId, input)
+        handleResult(result, (session: TerminalSession) => {
+          dispatch({ type: 'upsertTerminalSession', payload: session })
+        })
+      },
+
+      async resizeTerminalSession(sessionId, cols, rows) {
+        const result = await resolvedServices.terminal.resizeSession(sessionId, cols, rows)
         handleResult(result, (session: TerminalSession) => {
           dispatch({ type: 'upsertTerminalSession', payload: session })
         })
@@ -439,7 +457,9 @@ export const AppStoreProvider = ({
       state.activeWorktreeId,
       state.activeWorkspaceId,
       state.activeThreadId,
+      state.terminalSessions,
       state.workspaces,
+      state.worktrees,
       state.threads,
       state.skills,
     ],

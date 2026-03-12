@@ -8,6 +8,7 @@ import { Sidebar } from '../sidebar/sidebar'
 import { TopBar } from '../topbar/topbar'
 import { ChatInput } from '../chat/chat-input'
 import { StatusBar } from '../statusbar/status-bar'
+import { isTauriRuntime } from '../../infrastructure/tauri/desktop-commands'
 
 export const AppShell = () => {
   const { state, actions } = useAppStore()
@@ -28,6 +29,7 @@ export const AppShell = () => {
 
   useEffect(() => {
     if (
+      isTauriRuntime() &&
       state.terminalPanelOpen &&
       !wasTerminalOpen.current &&
       state.terminalSessions.length === 0
@@ -81,7 +83,7 @@ export const AppShell = () => {
 
               {isChatRoute && <ChatInput />}
               <StatusBar />
-              {state.terminalPanelOpen && <TerminalPanel />}
+              <TerminalPanel />
             </div>
 
             {state.diffPanelOpen && <DiffPanel />}
