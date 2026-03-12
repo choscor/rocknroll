@@ -1,25 +1,12 @@
-import type { MouseEvent } from 'react'
-import { getCurrentWindow } from '@tauri-apps/api/window'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '../../state/app-store-context'
 import { OpenWorkspaceButton } from './open-workspace-button'
 import { SidebarNav } from './sidebar-nav'
 import { WorkspaceList } from './workspace-list'
-import { isTauriRuntime } from '../../infrastructure/tauri/desktop-commands'
 
 export const Sidebar = () => {
   const { state } = useAppStore()
-  const handleSidebarTopDoubleClick = (event: MouseEvent<HTMLElement>) => {
-    if (event.button !== 0 || event.defaultPrevented || !isTauriRuntime()) {
-      return
-    }
-
-    event.preventDefault()
-    void getCurrentWindow().toggleMaximize().catch((error) => {
-      console.warn('Window maximize toggle failed', error)
-    })
-  }
 
   return (
     <aside
@@ -33,7 +20,6 @@ export const Sidebar = () => {
         <div
           className="window-drag-region h-[60px] shrink-0 border-b border-sidebar-border/70"
           data-tauri-drag-region
-          onDoubleClick={handleSidebarTopDoubleClick}
         />
 
         <div className="space-y-4 px-3 py-3">
