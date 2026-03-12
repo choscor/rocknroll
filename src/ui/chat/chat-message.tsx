@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Check, Copy } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { ChatMessage as ChatMessageType } from '../../domain/contracts'
 
 interface ChatMessageProps {
@@ -19,57 +22,33 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: isUser ? 'flex-end' : 'flex-start',
-        animation: 'messageSlideUp 200ms ease',
-      }}
+      className={cn(
+        'animate-in slide-in-from-bottom-2 flex flex-col gap-1 duration-200',
+        isUser ? 'items-end' : 'items-start',
+      )}
     >
-      <div style={{
-        fontSize: '0.7rem',
-        color: '#666',
-        marginBottom: '4px',
-        padding: '0 4px',
-      }}>
+      <div className="px-1 text-xs text-muted-foreground">
         {isUser ? 'You' : isSystem ? 'System' : 'Assistant'}
       </div>
       <div
-        style={{
-          maxWidth: '80%',
-          padding: '10px 14px',
-          borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-          background: isUser ? '#4a9eff' : isSystem ? '#2a2a45' : '#1e1e38',
-          color: '#e0e0e8',
-          fontSize: '0.85rem',
-          lineHeight: 1.5,
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-          position: 'relative',
-        }}
+        className={cn(
+          'relative max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm',
+          isUser && 'rounded-br-md bg-primary text-primary-foreground',
+          isSystem && 'rounded-bl-md border bg-muted/80 text-foreground',
+          !isUser && !isSystem && 'rounded-bl-md border bg-card text-card-foreground',
+        )}
       >
         {message.content}
         {!isUser && (
-          <button
-            type="button"
+          <Button
+            size="icon-xs"
+            variant="ghost"
             onClick={() => void handleCopy()}
-            style={{
-              position: 'absolute',
-              top: '4px',
-              right: '4px',
-              background: 'transparent',
-              border: 'none',
-              color: '#666',
-              cursor: 'pointer',
-              fontSize: '0.7rem',
-              padding: '2px 4px',
-              borderRadius: '4px',
-              opacity: 0.6,
-            }}
+            className="absolute right-2 top-2 opacity-70 hover:opacity-100"
             title="Copy"
           >
-            {copied ? '✓' : '⧉'}
-          </button>
+            {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+          </Button>
         )}
       </div>
     </div>

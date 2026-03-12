@@ -7,8 +7,8 @@ describe('app shell integration', () => {
   it('renders the main layout with sidebar and chat', async () => {
     renderApp({ initialPath: '/chat' })
 
-    expect(await screen.findByText('rocknroll')).toBeInTheDocument()
-    expect(await screen.findByText('Welcome to rocknroll')).toBeInTheDocument()
+    expect(await screen.findByText('Threads')).toBeInTheDocument()
+    expect(await screen.findByText("Let's build")).toBeInTheDocument()
   })
 
   it('navigates to settings and interacts with providers', async () => {
@@ -62,5 +62,31 @@ describe('app shell integration', () => {
 
     expect(await screen.findByText('You')).toBeInTheDocument()
     expect(await screen.findByText('Assistant')).toBeInTheDocument()
+  })
+
+  it('shows open and commit dropdown actions', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialPath: '/chat' })
+
+    await user.click(await screen.findByRole('button', { name: /open/i }))
+    expect(await screen.findByText('VS Code')).toBeInTheDocument()
+
+    await user.click(await screen.findByRole('button', { name: /commit/i }))
+    expect(await screen.findByText('Git actions')).toBeInTheDocument()
+    expect(await screen.findByText('Create PR')).toBeInTheDocument()
+  })
+
+  it('toggles terminal and diff panels with data loading', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialPath: '/chat' })
+
+    await user.click(await screen.findByRole('button', { name: 'Toggle terminal' }))
+    expect(await screen.findByText('Terminal')).toBeInTheDocument()
+    expect(await screen.findByText('main-session-1')).toBeInTheDocument()
+
+    await user.click(await screen.findByRole('button', { name: 'Toggle diff' }))
+    expect(await screen.findByText('Branch')).toBeInTheDocument()
+    expect((await screen.findAllByText('+4')).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText('-1')).length).toBeGreaterThan(0)
   })
 })

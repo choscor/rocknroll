@@ -1,42 +1,42 @@
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
 export const AutomationPage = () => {
   return (
-    <div style={{ padding: '24px', display: 'grid', gap: '16px', alignContent: 'start' }}>
-      <h2 style={{ margin: 0, color: '#e0e0e8', fontSize: '1.4rem' }}>Automation Queue</h2>
-      <p style={{ margin: 0, color: '#a0a0b8' }}>
-        This v1 scaffold reserves the automation surface for scheduled agent tasks.
-      </p>
+    <div className="h-full overflow-y-auto px-6 py-6">
+      <div className="mx-auto grid w-full max-w-5xl gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-semibold">Automation Queue</h2>
+          <Badge variant="outline">v1</Badge>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          This v1 scaffold reserves the automation surface for scheduled agent tasks.
+        </p>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: '14px',
-      }}>
-        <article style={{
-          background: '#1e1e38',
-          border: '1px solid #2a2a45',
-          borderRadius: '12px',
-          padding: '14px',
-          display: 'grid',
-          gap: '8px',
-        }}>
-          <h3 style={{ margin: 0, color: '#e0e0e8' }}>Planned</h3>
-          <small style={{ color: '#a0a0b8' }}>Daily dependency check</small>
-          <small style={{ color: '#a0a0b8' }}>Branch health status digest</small>
-          <small style={{ color: '#a0a0b8' }}>PR review reminders</small>
-        </article>
+        <div className="grid gap-3 md:grid-cols-2">
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle>Planned</CardTitle>
+              <CardDescription>Upcoming workflow automations.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-2 text-sm text-muted-foreground">
+              <p>Daily dependency check</p>
+              <p>Branch health status digest</p>
+              <p>PR review reminders</p>
+            </CardContent>
+          </Card>
 
-        <article style={{
-          background: '#1e1e38',
-          border: '1px solid #2a2a45',
-          borderRadius: '12px',
-          padding: '14px',
-          display: 'grid',
-          gap: '8px',
-        }}>
-          <h3 style={{ margin: 0, color: '#e0e0e8' }}>Current behavior</h3>
-          <small style={{ color: '#a0a0b8' }}>UI-only placeholder in this scaffold.</small>
-          <small style={{ color: '#a0a0b8' }}>No background cron job or queue runner yet.</small>
-        </article>
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle>Current behavior</CardTitle>
+              <CardDescription>What is already available in this scaffold.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-2 text-sm text-muted-foreground">
+              <p>UI-only placeholder in this scaffold.</p>
+              <p>No background cron job or queue runner yet.</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

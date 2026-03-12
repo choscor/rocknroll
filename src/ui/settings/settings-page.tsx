@@ -1,7 +1,17 @@
 import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useAppStore } from '../../state/app-store-context'
 import type { ProviderId } from '../../domain/contracts'
-import './settings-page.css'
 
 const providers: ProviderId[] = ['claude', 'codex']
 
@@ -13,181 +23,244 @@ export const SettingsPage = () => {
   })
 
   return (
-    <div className="settings-page">
-      <h2>Settings</h2>
-      <p>Manage provider connections, model preferences, and editor settings.</p>
+    <div className="h-full overflow-y-auto px-6 py-6">
+      <div className="mx-auto grid w-full max-w-5xl gap-4">
+        <h2 className="text-2xl font-semibold">Settings</h2>
+        <p className="text-sm text-muted-foreground">
+          Manage provider connections, model preferences, and editor settings.
+        </p>
 
-      <div className="settings-section">
-        <h3>Provider Connections</h3>
-        <div className="settings-grid">
-          {providers.map((provider) => {
-            const status = state.providerStatuses[provider]
-            return (
-              <div className="settings-card" key={provider}>
-                <h4>{provider.toUpperCase()}</h4>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <span style={{
-                    padding: '2px 8px',
-                    borderRadius: '999px',
-                    fontSize: '0.7rem',
-                    fontWeight: 700,
-                    background: status.connected ? 'rgba(74, 222, 128, 0.15)' : 'rgba(248, 113, 113, 0.15)',
-                    color: status.connected ? '#4ade80' : '#f87171',
-                  }}>
-                    {status.connected ? 'Connected' : 'Disconnected'}
-                  </span>
-                  <small>{status.authMode ? `Mode: ${status.authMode}` : ''}</small>
-                </div>
-                <small>Credential: {status.maskedCredential ?? 'None'}</small>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={() => void actions.connectOAuth(provider)}
-                    style={{
-                      padding: '5px 10px',
-                      background: '#4a9eff',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Connect OAuth
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void actions.disconnect(provider)}
-                    style={{
-                      padding: '5px 10px',
-                      background: 'transparent',
-                      color: '#a0a0b8',
-                      border: '1px solid #2a2a45',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Disconnect
-                  </button>
-                </div>
-                <div className="settings-field">
-                  <label htmlFor={`api-key-${provider}`}>API key</label>
-                  <input
-                    id={`api-key-${provider}`}
-                    type="password"
-                    value={apiKeys[provider]}
-                    onChange={(e) =>
-                      setApiKeys((prev) => ({ ...prev, [provider]: e.target.value }))
-                    }
-                    placeholder="Paste provider API key"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void actions.setApiKey(provider, apiKeys[provider])
-                      setApiKeys((prev) => ({ ...prev, [provider]: '' }))
-                    }}
-                    style={{
-                      padding: '5px 10px',
-                      background: '#1e1e38',
-                      color: '#e0e0e8',
-                      border: '1px solid #2a2a45',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Save API key
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>Provider Connections</CardTitle>
+            <CardDescription>
+              Connect authentication providers with OAuth or API keys.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-2">
+            {providers.map((provider) => {
+              const status = state.providerStatuses[provider]
 
-      <div className="settings-section">
-        <h3>Model Configuration</h3>
-        <div className="settings-grid">
-          <div className="settings-field">
-            <label>Default Model</label>
-            <select
-              value={state.modelConfig.modelId}
-              onChange={(e) => actions.updateModelConfig({
-                ...state.modelConfig,
-                modelId: e.target.value,
-                modelDisplayName: e.target.options[e.target.selectedIndex].text,
-              })}
-            >
-              <option value="claude-opus-4-6">Claude Opus 4.6</option>
-              <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
-              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
-            </select>
-          </div>
-          <div className="settings-field">
-            <label>Default Effort</label>
-            <select
-              value={state.modelConfig.effort}
-              onChange={(e) => actions.updateModelConfig({
-                ...state.modelConfig,
-                effort: e.target.value as 'low' | 'medium' | 'high' | 'extra-high',
-              })}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="extra-high">Extra High</option>
-            </select>
-          </div>
-        </div>
-      </div>
+              return (
+                <Card key={provider} className="rounded-xl border bg-background">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      {provider.toUpperCase()}
+                      <Badge variant={status.connected ? 'default' : 'outline'}>
+                        {status.connected ? 'Connected' : 'Disconnected'}
+                      </Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      {status.authMode ? `Mode: ${status.authMode}` : 'Not connected yet'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="grid gap-3">
+                    <p className="text-xs text-muted-foreground">
+                      Credential: {status.maskedCredential ?? 'None'}
+                    </p>
 
-      <div className="settings-section">
-        <h3>Preferences</h3>
-        <div className="settings-grid">
-          <div className="settings-field">
-            <label>Execution Mode</label>
-            <select
-              value={state.settings.executionMode}
-              onChange={(e) => actions.updateSettings({
-                ...state.settings,
-                executionMode: e.target.value as 'local' | 'remote',
-              })}
-            >
-              <option value="local">Local</option>
-              <option value="remote">Remote</option>
-            </select>
-          </div>
-          <div className="settings-field">
-            <label>Default Permissions</label>
-            <select
-              value={state.settings.defaultPermissions}
-              onChange={(e) => actions.updateSettings({
-                ...state.settings,
-                defaultPermissions: e.target.value,
-              })}
-            >
-              <option value="ask">Ask</option>
-              <option value="auto">Auto-approve</option>
-              <option value="deny">Deny by default</option>
-            </select>
-          </div>
-          <div className="settings-field">
-            <label>Preferred Editor</label>
-            <select
-              value={state.settings.preferredEditor}
-              onChange={(e) => actions.updateSettings({
-                ...state.settings,
-                preferredEditor: e.target.value,
-              })}
-            >
-              <option value="vscode">VS Code</option>
-              <option value="cursor">Cursor</option>
-              <option value="xcode">Xcode</option>
-            </select>
-          </div>
-        </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => void actions.connectOAuth(provider)}
+                      >
+                        Connect OAuth
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => void actions.disconnect(provider)}
+                      >
+                        Disconnect
+                      </Button>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <label htmlFor={`api-key-${provider}`} className="text-xs text-muted-foreground">
+                        API key
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id={`api-key-${provider}`}
+                          type="password"
+                          value={apiKeys[provider]}
+                          onChange={(event) =>
+                            setApiKeys((prev) => ({ ...prev, [provider]: event.target.value }))
+                          }
+                          placeholder="Paste provider API key"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => {
+                            void actions.setApiKey(provider, apiKeys[provider])
+                            setApiKeys((prev) => ({ ...prev, [provider]: '' }))
+                          }}
+                        >
+                          Save API key
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>Model Configuration</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">Default Model</label>
+              <Select
+                value={state.modelConfig.modelId}
+                onValueChange={(value) => {
+                  if (!value) {
+                    return
+                  }
+
+                  const options = {
+                    'claude-opus-4-6': 'Claude Opus 4.6',
+                    'claude-sonnet-4-6': 'Claude Sonnet 4.6',
+                    'claude-haiku-4-5-20251001': 'Claude Haiku 4.5',
+                  } as const
+
+                  actions.updateModelConfig({
+                    ...state.modelConfig,
+                    modelId: value,
+                    modelDisplayName: options[value as keyof typeof options] ?? value,
+                  })
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="claude-opus-4-6">Claude Opus 4.6</SelectItem>
+                  <SelectItem value="claude-sonnet-4-6">Claude Sonnet 4.6</SelectItem>
+                  <SelectItem value="claude-haiku-4-5-20251001">Claude Haiku 4.5</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">Default Effort</label>
+              <Select
+                value={state.modelConfig.effort}
+                onValueChange={(value) => {
+                  if (!value) {
+                    return
+                  }
+
+                  actions.updateModelConfig({
+                    ...state.modelConfig,
+                    effort: value as 'low' | 'medium' | 'high' | 'extra-high',
+                  })
+                }}
+              >
+                <SelectTrigger className="capitalize">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="extra-high">Extra High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>Preferences</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">Execution Mode</label>
+              <Select
+                value={state.settings.executionMode}
+                onValueChange={(value) => {
+                  if (!value) {
+                    return
+                  }
+
+                  actions.updateSettings({
+                    ...state.settings,
+                    executionMode: value as 'local' | 'remote',
+                  })
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="local">Local</SelectItem>
+                  <SelectItem value="remote">Remote</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">Default Permissions</label>
+              <Select
+                value={state.settings.defaultPermissions}
+                onValueChange={(value) => {
+                  if (!value) {
+                    return
+                  }
+
+                  actions.updateSettings({
+                    ...state.settings,
+                    defaultPermissions: value,
+                  })
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ask">Ask</SelectItem>
+                  <SelectItem value="auto">Auto-approve</SelectItem>
+                  <SelectItem value="deny">Deny by default</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">Preferred Editor</label>
+              <Select
+                value={state.settings.preferredEditor}
+                onValueChange={(value) => {
+                  if (!value) {
+                    return
+                  }
+
+                  actions.updateSettings({
+                    ...state.settings,
+                    preferredEditor: value,
+                  })
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vscode">VS Code</SelectItem>
+                  <SelectItem value="cursor">Cursor</SelectItem>
+                  <SelectItem value="xcode">Xcode</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

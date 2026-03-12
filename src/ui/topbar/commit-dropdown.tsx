@@ -1,64 +1,74 @@
-import { useState } from 'react'
+import { ChevronDown, CloudUpload, GitCommitHorizontal, Github } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useAppStore } from '../../state/app-store-context'
 
 export const CommitDropdown = () => {
   const { state, actions } = useAppStore()
-  const [open, setOpen] = useState(false)
 
   const disabled = !state.activeWorktreeId
 
   return (
-    <div className="topbar-dropdown">
-      <button
-        type="button"
-        className="topbar-btn"
-        onClick={() => setOpen(!open)}
-        disabled={disabled}
-        style={{
-          background: disabled ? undefined : '#4a9eff',
-          color: disabled ? undefined : '#fff',
-          borderColor: disabled ? undefined : '#3a8adf',
-        }}
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={(
+          <Button
+            variant="outline"
+            className="h-10 rounded-xl border border-border/80 bg-card px-4 hover:bg-muted/80"
+            disabled={disabled}
+          />
+        )}
       >
-        Commit ▾
-      </button>
-      {open && (
-        <div className="topbar-dropdown-menu">
-          <button
-            type="button"
-            className="topbar-dropdown-item"
+        <span className="inline-flex items-center gap-2">
+          <GitCommitHorizontal className="size-4" />
+          Commit
+          <ChevronDown className="size-4 text-muted-foreground" />
+        </span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="min-w-56 rounded-2xl bg-card p-2">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Git actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="rounded-xl px-3 py-2"
             onClick={() => {
               void actions.commitChanges(state.aiCommitMessage || 'auto commit')
-              setOpen(false)
             }}
           >
+            <GitCommitHorizontal className="size-4" />
             Commit
-          </button>
-          <button
-            type="button"
-            className="topbar-dropdown-item"
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="rounded-xl px-3 py-2"
             onClick={() => {
               void actions.commitChanges(state.aiCommitMessage || 'auto commit')
-              setOpen(false)
             }}
           >
+            <CloudUpload className="size-4" />
             Commit + Push
-          </button>
-          <button
-            type="button"
-            className="topbar-dropdown-item"
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="rounded-xl px-3 py-2"
             onClick={() => {
               void actions.createPullRequest(
                 state.aiCommitMessage || 'New PR',
                 'Auto-generated PR',
               )
-              setOpen(false)
             }}
           >
+            <Github className="size-4" />
             Create PR
-          </button>
-        </div>
-      )}
-    </div>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

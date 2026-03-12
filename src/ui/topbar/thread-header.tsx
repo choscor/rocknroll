@@ -8,26 +8,19 @@ export const ThreadHeader = () => {
 
   if (!activeThread) {
     return (
-      <div style={{ color: '#a0a0b8', fontSize: '0.85rem' }}>
+      <div className="text-sm text-muted-foreground">
         Select or create a thread to begin
       </div>
     )
   }
 
   return (
-    <div style={{ minWidth: 0 }}>
-      <div style={{
-        fontSize: '0.9rem',
-        fontWeight: 600,
-        color: '#e0e0e8',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}>
+    <div className="min-w-0">
+      <div className="truncate text-base font-semibold text-foreground">
         {activeThread.title}
       </div>
       {activeWorkspace && (
-        <div style={{ fontSize: '0.7rem', color: '#a0a0b8' }}>
+        <div className="truncate text-xs text-muted-foreground">
           {activeWorkspace.name} / {activeWorkspace.gitBranch}
         </div>
       )}
