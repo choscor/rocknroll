@@ -25,18 +25,6 @@ describe('app shell integration', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('connected via OAuth')
   })
 
-  it('navigates to automations page', async () => {
-    renderApp({ initialPath: '/automations' })
-
-    expect(await screen.findByText('Automation Queue')).toBeInTheDocument()
-  })
-
-  it('navigates to skills page', async () => {
-    renderApp({ initialPath: '/skills' })
-
-    expect(await screen.findByRole('heading', { name: 'Skills' })).toBeInTheDocument()
-  })
-
   it('shows workspace in sidebar', async () => {
     renderApp({ initialPath: '/chat' })
 

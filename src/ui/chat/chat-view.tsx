@@ -50,10 +50,10 @@ export const ChatView = () => {
           <div className="inline-flex size-14 items-center justify-center rounded-2xl border bg-card shadow-sm">
             <Sparkles className="size-8" />
           </div>
-          <h2 className="text-5xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">
             Let&apos;s build
           </h2>
-          <p className="text-5xl text-muted-foreground">rocknroll</p>
+          <p className="text-3xl text-muted-foreground">rocknroll</p>
         </div>
       </div>
     )
@@ -61,7 +61,7 @@ export const ChatView = () => {
 
   return (
     <div className="h-full overflow-y-auto px-6 py-6">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 lg:max-w-[80%]">
         {state.messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}

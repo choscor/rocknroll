@@ -22,7 +22,7 @@ export const StatusBar = () => {
       : 'Deny by default'
 
   return (
-    <div className="flex items-center justify-between border-t bg-background px-6 py-2 text-xs text-muted-foreground">
+    <div className="flex items-center justify-between bg-background px-6 py-2 text-xs text-muted-foreground">
       <div className="flex items-center gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger

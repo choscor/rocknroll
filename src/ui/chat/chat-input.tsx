@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, Mic, Plus } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowUp, Check, ChevronDown, Cpu, Gauge, Mic, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
 import type { EffortLevel } from '../../domain/contracts'
 import { useAppStore } from '../../state/app-store-context'
@@ -24,14 +24,6 @@ const efforts: EffortLevel[] = ['low', 'medium', 'high', 'extra-high']
 export const ChatInput = () => {
   const { state, actions } = useAppStore()
   const [draft, setDraft] = useState('')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
-    }
-  }, [draft])
 
   const handleSend = () => {
     const content = draft.trim()
@@ -47,13 +39,25 @@ export const ChatInput = () => {
     }
   }
 
+  const selectorTriggerClass =
+    'h-9 rounded-full border border-border/70 bg-muted/50 px-3 text-sm font-normal text-muted-foreground hover:bg-muted data-[popup-open]:bg-muted'
+
+  const selectedModel =
+    models.find((model) => model.id === state.modelConfig.modelId)?.label ??
+    state.modelConfig.modelDisplayName
+
+  const formatEffort = (level: EffortLevel) =>
+    level
+      .split('-')
+      .map((token) => token.charAt(0).toUpperCase() + token.slice(1))
+      .join(' ')
+
   return (
-    <div className="border-t bg-background px-5 pb-3 pt-4">
-      <div className="mx-auto w-full max-w-5xl">
+    <div className="bg-background px-5 pb-3 pt-4">
+      <div className="mx-auto w-full max-w-5xl lg:max-w-[80%]">
         <div className="rounded-[28px] border border-border/80 bg-card px-4 py-3 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.35)]">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start">
             <Textarea
-              ref={textareaRef}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -63,102 +67,133 @@ export const ChatInput = () => {
                   : 'Select a thread to start chatting'
               }
               disabled={!state.activeThreadId}
-              rows={1}
-              className="max-h-[180px] min-h-[56px] border-0 bg-transparent px-0 py-1 text-base shadow-none focus-visible:ring-0"
+              rows={2}
+              className="field-sizing-fixed min-h-[68px] resize-none border-0 bg-transparent px-1 py-2 text-base shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100"
             />
-
-            <Button
-              type="button"
-              onClick={handleSend}
-              disabled={!draft.trim() || !state.activeThreadId}
-              size="icon"
-              className="mt-0.5 size-9 shrink-0 rounded-full bg-black text-white hover:bg-black/85 disabled:bg-muted disabled:text-muted-foreground"
-            >
-              <ArrowUp className="size-4" />
-              <span className="sr-only">Send</span>
-            </Button>
           </div>
-
-          <Separator className="my-2 bg-border/70" />
 
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 type="button"
-                size="icon-sm"
+                size="icon-lg"
                 variant="ghost"
-                className="rounded-lg"
+                className="rounded-full"
                 disabled={!state.activeThreadId}
                 title="Add photos & files"
               >
-                <Plus className="size-4" />
+                <Plus className="size-5" />
                 <span className="sr-only">Add photos and files</span>
               </Button>
 
-            <Select
-              value={state.modelConfig.modelId}
-              onValueChange={(value) => {
-                if (!value) {
-                  return
-                }
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={(
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={selectorTriggerClass}
+                    />
+                  )}
+                >
+                  <Cpu className="size-4" />
+                  {selectedModel}
+                  <ChevronDown className="size-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-64 rounded-2xl bg-card p-2">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="mb-1 text-base font-medium text-muted-foreground">
+                      Choose model
+                    </DropdownMenuLabel>
+                    {models.map((model) => (
+                      <DropdownMenuItem
+                        key={model.id}
+                        className="rounded-xl px-3 py-2 text-base"
+                        onClick={() =>
+                          actions.updateModelConfig({
+                            ...state.modelConfig,
+                            modelId: model.id,
+                            modelDisplayName: model.label,
+                          })
+                        }
+                      >
+                        <Cpu className="size-4" />
+                        {model.label}
+                        {state.modelConfig.modelId === model.id && (
+                          <Check className="ml-auto size-4" />
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-                const selected = models.find((model) => model.id === value)
-                actions.updateModelConfig({
-                  ...state.modelConfig,
-                  modelId: value,
-                  modelDisplayName: selected?.label ?? value,
-                })
-              }}
-            >
-              <SelectTrigger size="sm" className="h-8 rounded-lg">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {models.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
-                    {model.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={state.modelConfig.effort}
-              onValueChange={(value) => {
-                if (!value) {
-                  return
-                }
-
-                actions.updateModelConfig({
-                  ...state.modelConfig,
-                  effort: value as EffortLevel,
-                })
-              }}
-            >
-              <SelectTrigger size="sm" className="h-8 rounded-lg capitalize">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {efforts.map((level) => (
-                  <SelectItem key={level} value={level} className="capitalize">
-                    {level}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={(
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={selectorTriggerClass}
+                    />
+                  )}
+                >
+                  <Gauge className="size-4" />
+                  {formatEffort(state.modelConfig.effort)}
+                  <ChevronDown className="size-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-64 rounded-2xl bg-card p-2">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="mb-1 text-base font-medium text-muted-foreground">
+                      Choose effort
+                    </DropdownMenuLabel>
+                    {efforts.map((level) => (
+                      <DropdownMenuItem
+                        key={level}
+                        className="rounded-xl px-3 py-2 text-base"
+                        onClick={() =>
+                          actions.updateModelConfig({
+                            ...state.modelConfig,
+                            effort: level,
+                          })
+                        }
+                      >
+                        <Gauge className="size-4" />
+                        {formatEffort(level)}
+                        {state.modelConfig.effort === level && (
+                          <Check className="ml-auto size-4" />
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
-            <Button
-              type="button"
-              size="icon-sm"
-              variant="ghost"
-              className="rounded-full text-muted-foreground"
-              title="Voice input"
-            >
-              <Mic className="size-4" />
-              <span className="sr-only">Voice input</span>
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                size="icon-lg"
+                variant="ghost"
+                className="rounded-full text-muted-foreground"
+                title="Voice input"
+              >
+                <Mic className="size-5" />
+                <span className="sr-only">Voice input</span>
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSend}
+                disabled={!draft.trim() || !state.activeThreadId}
+                size="icon-lg"
+                className="rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:bg-muted disabled:text-muted-foreground"
+              >
+                <ArrowUp className="size-5" />
+                <span className="sr-only">Send</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

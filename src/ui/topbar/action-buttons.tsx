@@ -40,7 +40,7 @@ export const ActionButtons = () => {
     { label: 'Xcode', icon: Wrench },
   ]
   const controlButtonClass =
-    'h-8 rounded-xl border border-border/70 bg-background px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60'
+    'h-8 rounded-xl border border-border/70 bg-background px-3 text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60'
 
   return (
     <>
@@ -105,7 +105,7 @@ export const ActionButtons = () => {
         onClick={actions.toggleDiffPanel}
         className={cn(
           controlButtonClass,
-          'gap-1 px-2.5 text-xs tracking-tight',
+          'gap-1 px-2.5',
           state.diffPanelOpen && 'bg-muted',
         )}
         aria-label="Toggle diff"

@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 import type { ThreadLocation, Workspace } from '../../domain/contracts'
 import { useAppStore } from '../../state/app-store-context'
 import { ThreadItem } from './thread-item'
@@ -71,38 +72,64 @@ export const WorkspaceItem = ({ workspace }: WorkspaceItemProps) => {
           render={
             <Button
               variant="ghost"
-              className="h-auto flex-1 justify-start gap-2 rounded-xl px-3 py-2 text-left"
+              className={cn(
+                'h-auto flex-1 justify-start gap-2 rounded-xl px-3 py-2 text-left',
+                isActive
+                  ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/65',
+              )}
             />
           }
           onClick={handleWorkspaceClick}
         >
           {isExpanded ? (
-            <ChevronUp className="size-4 shrink-0 text-muted-foreground" />
+            <ChevronUp
+              className={cn(
+                'size-4 shrink-0',
+                isActive ? 'text-sidebar-accent-foreground/80' : 'text-sidebar-foreground/75',
+              )}
+            />
           ) : (
-            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+            <ChevronDown
+              className={cn(
+                'size-4 shrink-0',
+                isActive ? 'text-sidebar-accent-foreground/80' : 'text-sidebar-foreground/75',
+              )}
+            />
           )}
           <Folder
-            className={
-              isActive ? 'size-4 shrink-0 text-foreground' : 'size-4 shrink-0 text-muted-foreground'
-            }
+            className={cn(
+              'size-4 shrink-0',
+              isActive ? 'text-sidebar-accent-foreground' : 'text-sidebar-foreground/80',
+            )}
           />
           <span
-            className={
+            className={cn(
+              'truncate text-sm',
               isActive
-                ? 'truncate text-sm font-medium text-foreground'
-                : 'truncate text-sm text-muted-foreground'
-            }
+                ? 'font-semibold text-sidebar-accent-foreground'
+                : 'font-medium text-sidebar-foreground',
+            )}
           >
             {workspace.name}
           </span>
-          <span className="ml-auto text-xs text-muted-foreground">{workspace.gitBranch}</span>
+          <span
+            className={cn(
+              'ml-auto text-xs',
+              isActive
+                ? 'text-sidebar-accent-foreground/80'
+                : 'text-sidebar-foreground/70',
+            )}
+          >
+            {workspace.gitBranch}
+          </span>
         </CollapsibleTrigger>
 
         <Button
           type="button"
           size="icon-sm"
           variant="ghost"
-          className="shrink-0 rounded-lg"
+          className="shrink-0 rounded-lg text-sidebar-foreground/85 hover:text-sidebar-foreground"
           onClick={(event) => {
             event.stopPropagation()
             if (!isExpanded) {
@@ -122,7 +149,7 @@ export const WorkspaceItem = ({ workspace }: WorkspaceItemProps) => {
 
       <CollapsibleContent className="space-y-1 pl-5 pr-1 pt-1">
         {showCreateForm && (
-          <div className="space-y-2 rounded-lg border border-border/70 bg-background/70 p-2">
+          <div className="space-y-2 rounded-lg border border-sidebar-border/85 bg-white/85 p-2">
             <Input
               value={title}
               onChange={(event) => setTitle(event.target.value)}

@@ -32,7 +32,8 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       </div>
       <div
         className={cn(
-          'relative max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm',
+          'relative whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm',
+          isUser ? 'max-w-[72%]' : 'w-[80%] max-w-[80%]',
           isUser && 'rounded-br-md bg-primary text-primary-foreground',
           isSystem && 'rounded-bl-md border bg-muted/80 text-foreground',
           !isUser && !isSystem && 'rounded-bl-md border bg-card text-card-foreground',

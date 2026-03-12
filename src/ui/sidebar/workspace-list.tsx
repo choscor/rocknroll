@@ -6,7 +6,7 @@ export const WorkspaceList = () => {
 
   if (state.workspaces.length === 0) {
     return (
-      <div className="rounded-lg px-3 py-2 text-sm text-muted-foreground">
+      <div className="rounded-lg px-3 py-2 text-sm text-sidebar-foreground/70">
         No workspaces yet.
       </div>
     )
