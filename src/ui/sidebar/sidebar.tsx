@@ -18,7 +18,7 @@ export const Sidebar = () => {
     >
       <div className="flex h-full flex-col">
         <div
-          className="window-drag-region h-[60px] shrink-0 border-b border-sidebar-border/70"
+          className="window-drag-region h-[52px] shrink-0 border-b border-sidebar-border/70"
           data-tauri-drag-region
         />
 

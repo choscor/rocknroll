@@ -8,12 +8,12 @@ export const ThreadHeader = () => {
   const title = activeThread?.title || 'New thread'
 
   return (
-    <div className="min-w-0 flex items-baseline gap-3">
-      <div className="truncate text-[1.35rem] font-semibold text-foreground">
+    <div className="min-w-0 flex items-baseline gap-2">
+      <div className="truncate text-[1.03rem] font-semibold text-foreground">
         {title}
       </div>
       {activeWorkspace && (
-        <div className="truncate text-[1.2rem] text-muted-foreground/85">
+        <div className="truncate text-[0.95rem] text-muted-foreground/85">
           {activeWorkspace.name}
         </div>
       )}
