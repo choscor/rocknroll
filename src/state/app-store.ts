@@ -239,29 +239,21 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
       }
 
     case 'setTerminalSessions':
-      return {
-        ...state,
-        terminalSessions: action.payload,
-      }
+      {
+        const primarySession =
+          action.payload.find((session) => session.status === 'open') ??
+          action.payload[0] ??
+          null
 
-    case 'upsertTerminalSession': {
-      const existingIndex = state.terminalSessions.findIndex(
-        (item) => item.id === action.payload.id,
-      )
-
-      if (existingIndex === -1) {
         return {
           ...state,
-          terminalSessions: [action.payload, ...state.terminalSessions],
+          terminalSessions: primarySession ? [primarySession] : [],
         }
       }
-
-      const nextSessions = [...state.terminalSessions]
-      nextSessions[existingIndex] = action.payload
-
+    case 'upsertTerminalSession': {
       return {
         ...state,
-        terminalSessions: nextSessions,
+        terminalSessions: [action.payload],
       }
     }
 

@@ -103,6 +103,6 @@ None of these are used for real auth in this scaffold yet.
 ## Current limitations (intentional)
 
 - OAuth/API key flows are mocked, not real provider integrations
-- Terminal sessions are mocked in-memory
+- Terminal is only fully available in Tauri runtime (web mode shows unavailable fallback)
 - Git commit/PR behavior is mocked (no real GitHub API calls)
-- Native commands are stubs for future implementation
+- Most native commands are still stubs for future implementation

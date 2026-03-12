@@ -28,7 +28,10 @@ export class MockTerminalService implements TerminalService {
     return ok(clone(this.db.terminalSessions))
   }
 
-  async createSession(worktreeId: string) {
+  async createSession(
+    worktreeId: string,
+    options?: { cwd?: string; shell?: string },
+  ) {
     const worktree = this.db.worktrees.find((item) => item.id === worktreeId)
     if (!worktree) {
       return err(
@@ -38,6 +41,8 @@ export class MockTerminalService implements TerminalService {
     }
 
     this.db.counters.terminal += 1
+    const cwd = options?.cwd ?? worktree.path
+    const shell = options?.shell
 
     const session: TerminalSession = {
       id: `term-${this.db.counters.terminal}`,
@@ -45,8 +50,10 @@ export class MockTerminalService implements TerminalService {
       title: `${worktree.name}-session-${this.db.counters.terminal}`,
       status: 'open',
       createdAt: nowIso(),
-      history: [`$ cd ${worktree.path}`],
-      lastOutput: `Session started in ${worktree.path}`,
+      history: [`$ cd ${cwd}`],
+      lastOutput: `Session started in ${cwd}`,
+      cwd,
+      shell,
     }
 
     this.db.terminalSessions.unshift(session)
@@ -80,6 +87,21 @@ export class MockTerminalService implements TerminalService {
     session.history.push(output)
     session.lastOutput = output
     persistDatabase(this.db)
+
+    return ok(clone(session))
+  }
+
+  async resizeSession(sessionId: string, cols: number, rows: number) {
+    void cols
+    void rows
+
+    const session = this.db.terminalSessions.find((item) => item.id === sessionId)
+    if (!session) {
+      return err(
+        'SESSION_NOT_FOUND',
+        `Terminal session ${sessionId} does not exist.`,
+      )
+    }
 
     return ok(clone(session))
   }

@@ -46,10 +46,18 @@ export interface GitService {
 
 export interface TerminalService {
   listSessions(): Promise<CommandResult<TerminalSession[]>>
-  createSession(worktreeId: string): Promise<CommandResult<TerminalSession>>
+  createSession(
+    worktreeId: string,
+    options?: { cwd?: string; shell?: string },
+  ): Promise<CommandResult<TerminalSession>>
   writeToSession(
     sessionId: string,
     input: string,
+  ): Promise<CommandResult<TerminalSession>>
+  resizeSession(
+    sessionId: string,
+    cols: number,
+    rows: number,
   ): Promise<CommandResult<TerminalSession>>
   closeSession(sessionId: string): Promise<CommandResult<TerminalSession>>
 }

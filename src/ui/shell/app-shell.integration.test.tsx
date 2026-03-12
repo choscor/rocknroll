@@ -100,8 +100,11 @@ describe('app shell integration', () => {
     renderApp({ initialPath: '/chat' })
 
     await user.click(await screen.findByRole('button', { name: 'Toggle terminal' }))
-    expect(await screen.findByText('Terminal')).toBeInTheDocument()
-    expect(await screen.findByText(/session-1/)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/Native terminal requires Tauri runtime/),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Create terminal session')).not.toBeInTheDocument()
+    expect(screen.queryByText('New session')).not.toBeInTheDocument()
 
     await user.click(await screen.findByRole('button', { name: 'Toggle diff' }))
     expect(await screen.findByText('Branch')).toBeInTheDocument()
