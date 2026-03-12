@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowUp, Cpu, Gauge, Mic, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import {
   Select,
   SelectContent,
@@ -51,9 +50,9 @@ export const ChatInput = () => {
     'h-9 rounded-full border border-border/70 bg-muted/50 px-3 text-sm font-normal text-muted-foreground hover:bg-muted data-[popup-open]:bg-muted'
 
   return (
-    <div className="border-t bg-background px-5 pb-3 pt-4">
+    <div className="bg-background px-5 pb-3 pt-4">
       <div className="mx-auto w-full max-w-5xl">
-        <div className="rounded-[28px] border border-blue-200/80 bg-[linear-gradient(180deg,rgba(235,245,255,0.95),rgba(221,236,255,0.95))] px-4 py-3 shadow-[0_10px_30px_-20px_rgba(29,78,216,0.35)]">
+        <div className="rounded-[28px] border border-border/80 bg-card px-4 py-3 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.35)]">
           <div className="flex items-start">
             <Textarea
               ref={textareaRef}
@@ -70,8 +69,6 @@ export const ChatInput = () => {
               className="max-h-[180px] min-h-[56px] border-0 bg-transparent px-0 py-1 text-base shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100"
             />
           </div>
-
-          <Separator className="my-2 bg-border/70" />
 
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
@@ -145,22 +142,22 @@ export const ChatInput = () => {
             <div className="flex items-center gap-1">
               <Button
                 type="button"
-                size="icon-sm"
+                size="icon-lg"
                 variant="ghost"
                 className="rounded-full text-muted-foreground"
                 title="Voice input"
               >
-                <Mic className="size-4" />
+                <Mic className="size-5" />
                 <span className="sr-only">Voice input</span>
               </Button>
               <Button
                 type="button"
                 onClick={handleSend}
                 disabled={!draft.trim() || !state.activeThreadId}
-                size="icon-sm"
+                size="icon-lg"
                 className="rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:bg-muted disabled:text-muted-foreground"
               >
-                <ArrowUp className="size-4" />
+                <ArrowUp className="size-5" />
                 <span className="sr-only">Send</span>
               </Button>
             </div>
