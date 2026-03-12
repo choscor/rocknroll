@@ -53,7 +53,7 @@ describe('app shell integration', () => {
     await user.click(await screen.findByRole('button', { name: 'Open workspace' }))
     promptSpy.mockRestore()
 
-    expect(await screen.findByText('new-app')).toBeInTheDocument()
+    expect((await screen.findAllByText('new-app')).length).toBeGreaterThan(0)
     expect(await screen.findByRole('status')).toHaveTextContent(
       'Workspace new-app created',
     )

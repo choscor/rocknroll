@@ -5,23 +5,16 @@ export const ThreadHeader = () => {
 
   const activeThread = state.threads.find((t) => t.id === state.activeThreadId)
   const activeWorkspace = state.workspaces.find((ws) => ws.id === state.activeWorkspaceId)
-
-  if (!activeThread) {
-    return (
-      <div className="text-sm text-muted-foreground">
-        Select or create a thread to begin
-      </div>
-    )
-  }
+  const title = activeThread?.title || 'New thread'
 
   return (
-    <div className="min-w-0">
-      <div className="truncate text-base font-semibold text-foreground">
-        {activeThread.title}
+    <div className="min-w-0 flex items-baseline gap-3">
+      <div className="truncate text-[1.35rem] font-semibold text-foreground">
+        {title}
       </div>
       {activeWorkspace && (
-        <div className="truncate text-xs text-muted-foreground">
-          {activeWorkspace.name} / {activeWorkspace.gitBranch}
+        <div className="truncate text-[1.2rem] text-muted-foreground/85">
+          {activeWorkspace.name}
         </div>
       )}
     </div>

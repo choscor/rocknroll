@@ -7,6 +7,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +39,8 @@ export const ActionButtons = () => {
     { label: 'Cursor', icon: FileCode2 },
     { label: 'Xcode', icon: Wrench },
   ]
+  const controlButtonClass =
+    'h-10 rounded-2xl border border-border/70 bg-background px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60'
 
   return (
     <>
@@ -46,7 +49,7 @@ export const ActionButtons = () => {
           render={(
             <Button
               variant="outline"
-              className="h-10 rounded-xl border border-border/80 bg-card px-4 hover:bg-muted/80"
+              className={cn(controlButtonClass, 'font-medium')}
               disabled={!activePath}
             />
           )}
@@ -83,9 +86,9 @@ export const ActionButtons = () => {
         <TooltipTrigger
           render={(
             <Button
-              variant={state.terminalPanelOpen ? 'secondary' : 'outline'}
+              variant="outline"
               size="icon"
-              className="size-10 rounded-xl"
+              className={cn(controlButtonClass, 'size-10 px-0', state.terminalPanelOpen && 'bg-muted')}
               onClick={actions.toggleTerminalPanel}
             />
           )}
@@ -98,9 +101,13 @@ export const ActionButtons = () => {
 
       <Button
         type="button"
-        variant={state.diffPanelOpen ? 'secondary' : 'outline'}
+        variant="outline"
         onClick={actions.toggleDiffPanel}
-        className="h-10 rounded-xl border border-border/80 bg-card px-3 text-sm hover:bg-muted/80"
+        className={cn(
+          controlButtonClass,
+          'gap-1.5 px-3 text-sm tracking-tight',
+          state.diffPanelOpen && 'bg-muted',
+        )}
         aria-label="Toggle diff"
         title="Toggle diff"
       >

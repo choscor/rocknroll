@@ -1,10 +1,13 @@
-import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '../../state/app-store-context'
 import { OpenWorkspaceButton } from './open-workspace-button'
 import { SidebarNav } from './sidebar-nav'
 import { WorkspaceList } from './workspace-list'
+import {
+  handleWindowChromeDoubleClick,
+  handleWindowChromeMouseDown,
+} from '../shell/window-chrome'
 
 export const Sidebar = () => {
   const { state } = useAppStore()
@@ -18,11 +21,15 @@ export const Sidebar = () => {
       )}
     >
       <div className="flex h-full flex-col">
+        <div
+          className="h-[60px] shrink-0 border-b border-sidebar-border/70"
+          onMouseDown={handleWindowChromeMouseDown}
+          onDoubleClick={handleWindowChromeDoubleClick}
+        />
+
         <div className="space-y-4 px-3 py-3">
           <SidebarNav />
         </div>
-
-        <Separator />
 
         <div className="flex items-center justify-between px-4 py-3">
           <div className="text-xs font-medium tracking-wide text-sidebar-foreground/60">
