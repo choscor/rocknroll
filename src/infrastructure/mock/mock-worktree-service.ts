@@ -2,9 +2,10 @@ import type { WorktreeService } from '../../repository/interfaces'
 import type { CreateWorktreeInput } from '../../domain/contracts'
 import {
   clone,
+  createWorktreeRecord,
   err,
-  nowIso,
   ok,
+  persistDatabase,
   toSnapshot,
   type MockDatabase,
 } from './mock-database'
@@ -28,19 +29,14 @@ export class MockWorktreeService implements WorktreeService {
       )
     }
 
-    this.db.counters.worktree += 1
-    const worktreeId = `wt-${this.db.counters.worktree}`
-
-    this.db.worktrees.push({
-      id: worktreeId,
+    const worktree = createWorktreeRecord(this.db, {
       name,
       branch,
       path,
-      active: false,
-      createdAt: nowIso(),
     })
 
-    this.db.activeWorktreeId = worktreeId
+    this.db.activeWorktreeId = worktree.id
+    persistDatabase(this.db)
 
     return ok(clone(toSnapshot(this.db.worktrees, this.db.activeWorktreeId)))
   }
@@ -52,6 +48,7 @@ export class MockWorktreeService implements WorktreeService {
     }
 
     this.db.activeWorktreeId = worktreeId
+    persistDatabase(this.db)
     return ok(clone(toSnapshot(this.db.worktrees, this.db.activeWorktreeId)))
   }
 
@@ -64,11 +61,24 @@ export class MockWorktreeService implements WorktreeService {
       return err('WORKTREE_NOT_FOUND', `Worktree ${worktreeId} does not exist.`)
     }
 
+    const isLinkedToThread = this.db.threads.some(
+      (thread) => thread.worktreeId === worktreeId,
+    )
+
+    if (isLinkedToThread) {
+      return err(
+        'WORKTREE_IN_USE',
+        `Cannot remove worktree ${worktreeId} because it is linked to existing threads.`,
+      )
+    }
+
     this.db.worktrees.splice(index, 1)
 
     if (this.db.activeWorktreeId === worktreeId) {
       this.db.activeWorktreeId = this.db.worktrees[0]?.id ?? null
     }
+
+    persistDatabase(this.db)
 
     return ok(clone(toSnapshot(this.db.worktrees, this.db.activeWorktreeId)))
   }

@@ -12,6 +12,10 @@ interface OpenEditorResult {
   launched: boolean
 }
 
+interface PickFolderResult {
+  path: string | null
+}
+
 const runtimeUnavailableError = <T>(): CommandResult<T> => ({
   ok: false,
   error: {
@@ -46,6 +50,20 @@ const invokeCommand = async <T>(
 }
 
 export const desktopCommands = {
+  pickFolder(): Promise<CommandResult<PickFolderResult>> {
+    if (typeof window === 'undefined') {
+      return Promise.resolve(runtimeUnavailableError<PickFolderResult>())
+    }
+
+    const picked = window.prompt('Enter workspace folder path')
+    return Promise.resolve({
+      ok: true,
+      data: {
+        path: picked?.trim() || null,
+      },
+    })
+  },
+
   openEditor(path: string): Promise<CommandResult<OpenEditorResult>> {
     if (!isTauriRuntime()) {
       return Promise.resolve({ ok: true, data: { path, launched: false } })

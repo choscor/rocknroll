@@ -3,7 +3,14 @@ import type {
   ProviderConnectionStatus,
   ProviderId,
 } from '../../domain/contracts'
-import { clone, err, nowIso, ok, type MockDatabase } from './mock-database'
+import {
+  clone,
+  err,
+  nowIso,
+  ok,
+  persistDatabase,
+  type MockDatabase,
+} from './mock-database'
 
 const maskApiKey = (apiKey: string): string => {
   const tail = apiKey.slice(-4)
@@ -28,6 +35,7 @@ export class MockAuthService implements AuthService {
       lastSyncedAt: nowIso(),
     }
     this.db.providers[provider] = updated
+    persistDatabase(this.db)
     return ok(clone(updated))
   }
 
@@ -47,6 +55,7 @@ export class MockAuthService implements AuthService {
     }
 
     this.db.providers[provider] = updated
+    persistDatabase(this.db)
     return ok(clone(updated))
   }
 
@@ -61,6 +70,7 @@ export class MockAuthService implements AuthService {
     }
 
     this.db.providers[provider] = updated
+    persistDatabase(this.db)
     return ok(clone(updated))
   }
 }

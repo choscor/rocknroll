@@ -23,7 +23,15 @@ import { useAppStore } from '../../state/app-store-context'
 export const ActionButtons = () => {
   const { state, actions } = useAppStore()
   const activeWorkspace = state.workspaces.find((ws) => ws.id === state.activeWorkspaceId)
+  const activeThread = state.threads.find((thread) => thread.id === state.activeThreadId)
+  const activeWorktree = state.worktrees.find(
+    (worktree) => worktree.id === state.activeWorktreeId,
+  )
   const diffStats = getDiffStats(state.diff)
+  const activePath =
+    activeThread?.location === 'worktree'
+      ? activeWorktree?.path ?? activeWorkspace?.path
+      : activeWorkspace?.path ?? activeWorktree?.path
 
   const editors = [
     { label: 'VS Code', icon: Code2 },
@@ -39,7 +47,7 @@ export const ActionButtons = () => {
             <Button
               variant="outline"
               className="h-10 rounded-xl border border-border/80 bg-card px-4 hover:bg-muted/80"
-              disabled={!activeWorkspace}
+              disabled={!activePath}
             />
           )}
         >
@@ -56,9 +64,9 @@ export const ActionButtons = () => {
             {editors.map((editor) => (
               <DropdownMenuItem
                 key={editor.label}
-                onClick={() => {
-                  if (activeWorkspace) {
-                    void actions.openEditor(activeWorkspace.path)
+              onClick={() => {
+                  if (activePath) {
+                    void actions.openEditor(activePath)
                   }
                 }}
                 className="rounded-xl px-3 py-2"

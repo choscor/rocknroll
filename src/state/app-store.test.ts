@@ -59,7 +59,14 @@ describe('app store reducer', () => {
     const withWorkspaces = appReducer(initial, {
       type: 'setWorkspaces',
       payload: [
-        { id: 'ws-1', name: 'test', path: '/test', gitBranch: 'main', createdAt: '2026-03-12T00:00:00.000Z' },
+        {
+          id: 'ws-1',
+          name: 'test',
+          path: '/test',
+          gitBranch: 'main',
+          localWorktreeId: 'wt-1',
+          createdAt: '2026-03-12T00:00:00.000Z',
+        },
       ],
     })
 
@@ -82,6 +89,8 @@ describe('app store reducer', () => {
       payload: {
         id: 'th-1',
         workspaceId: 'ws-1',
+        location: 'local',
+        worktreeId: 'wt-1',
         title: 'Test thread',
         status: 'active',
         createdAt: '2026-03-12T00:00:00.000Z',

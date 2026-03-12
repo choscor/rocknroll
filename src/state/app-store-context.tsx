@@ -14,6 +14,7 @@ import type {
   AppSettings,
   ChatMessage,
   CommandResult,
+  CreateThreadInput,
   CreateWorktreeInput,
   ModelConfig,
   ProviderId,
@@ -47,7 +48,8 @@ export interface AppActions {
   removeWorkspace(workspaceId: string): Promise<void>
   setActiveWorkspace(workspaceId: string): void
   loadThreads(workspaceId: string): Promise<void>
-  createThread(workspaceId: string, title: string): Promise<void>
+  createThread(workspaceId: string, input: CreateThreadInput): Promise<void>
+  activateThread(workspaceId: string, threadId: string): Promise<void>
   removeThread(threadId: string): Promise<void>
   setActiveThread(threadId: string): void
   sendMessage(threadId: string, content: string): Promise<void>
@@ -82,6 +84,29 @@ const activeWorktreeRequired = (
   }
 
   return { ok: true, data: worktreeId }
+}
+
+const normalizePath = (path: string): string => {
+  const trimmed = path.trim()
+  if (!trimmed) {
+    return ''
+  }
+
+  const normalized = trimmed.replace(/\/+$/, '')
+  return normalized || '/'
+}
+
+const mergeThreadsForWorkspace = (
+  currentThreads: Thread[],
+  workspaceId: string,
+  nextThreads: Thread[],
+): Thread[] => {
+  const remaining = currentThreads.filter((thread) => thread.workspaceId !== workspaceId)
+  return [...remaining, ...nextThreads]
+}
+
+const sortThreads = (threads: Thread[]): Thread[] => {
+  return [...threads].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
 const useResultHandler = (
@@ -130,47 +155,71 @@ export const AppStoreProvider = ({
   const handleResult = useResultHandler(setError)
 
   const refreshAll = useCallback(async () => {
-    const [providerResult, worktreeResult, pullRequestResult, terminalResult, workspaceResult, skillResult] =
-      await Promise.all([
-        resolvedServices.auth.listStatuses(),
-        resolvedServices.worktree.list(),
-        resolvedServices.git.listPullRequests(),
-        resolvedServices.terminal.listSessions(),
-        resolvedServices.workspace.list(),
-        resolvedServices.skill.list(),
-      ])
+    const [
+      providerResult,
+      worktreeResult,
+      pullRequestResult,
+      terminalResult,
+      workspaceResult,
+      skillResult,
+    ] = await Promise.all([
+      resolvedServices.auth.listStatuses(),
+      resolvedServices.worktree.list(),
+      resolvedServices.git.listPullRequests(),
+      resolvedServices.terminal.listSessions(),
+      resolvedServices.workspace.list(),
+      resolvedServices.skill.list(),
+    ])
 
     handleResult(providerResult, (statuses) => {
       dispatch({ type: 'setProviderStatuses', payload: statuses })
     })
-
     handleResult(worktreeResult, (snapshot) => {
       dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
     })
-
     handleResult(pullRequestResult, (pullRequests) => {
       dispatch({ type: 'setPullRequests', payload: pullRequests })
     })
-
     handleResult(terminalResult, (sessions) => {
       dispatch({ type: 'setTerminalSessions', payload: sessions })
     })
-
-    handleResult(workspaceResult, async (workspaces: Workspace[]) => {
-      dispatch({ type: 'setWorkspaces', payload: workspaces })
-      if (workspaces.length > 0) {
-        dispatch({ type: 'setActiveWorkspace', payload: workspaces[0].id })
-        const threadsResult = await resolvedServices.thread.list(workspaces[0].id)
-        handleResult(threadsResult, (threads: Thread[]) => {
-          dispatch({ type: 'setThreads', payload: threads })
-        })
-      }
-    })
-
     handleResult(skillResult, (skills: Skill[]) => {
       dispatch({ type: 'setSkills', payload: skills })
     })
-  }, [handleResult, resolvedServices])
+
+    if (!workspaceResult.ok) {
+      setError(workspaceResult.error.message)
+      return
+    }
+
+    setError(null)
+    const workspaces = workspaceResult.data
+    dispatch({ type: 'setWorkspaces', payload: workspaces })
+    dispatch({ type: 'setActiveWorkspace', payload: workspaces[0]?.id ?? null })
+
+    if (workspaces.length === 0) {
+      dispatch({ type: 'setThreads', payload: [] })
+      dispatch({ type: 'setActiveThread', payload: null })
+      dispatch({ type: 'setMessages', payload: [] })
+      return
+    }
+
+    const threadResults = await Promise.all(
+      workspaces.map((workspace) => resolvedServices.thread.list(workspace.id)),
+    )
+    const mergedThreads: Thread[] = []
+
+    for (const threadResult of threadResults) {
+      if (!threadResult.ok) {
+        setError(threadResult.error.message)
+        return
+      }
+
+      mergedThreads.push(...threadResult.data)
+    }
+
+    dispatch({ type: 'setThreads', payload: sortThreads(mergedThreads) })
+  }, [handleResult, resolvedServices, setError])
 
   useEffect(() => {
     void refreshAll()
@@ -317,15 +366,73 @@ export const AppStoreProvider = ({
         const result = await resolvedServices.workspace.list()
         handleResult(result, (workspaces: Workspace[]) => {
           dispatch({ type: 'setWorkspaces', payload: workspaces })
+          if (!state.activeWorkspaceId && workspaces.length > 0) {
+            dispatch({ type: 'setActiveWorkspace', payload: workspaces[0].id })
+          }
         })
       },
 
       async createWorkspace(name, path) {
+        const normalizedPath = normalizePath(path)
+        if (!normalizedPath) {
+          setError('Workspace path is required.')
+          return
+        }
+
+        const existing = state.workspaces.find(
+          (workspace) => normalizePath(workspace.path) === normalizedPath,
+        )
+        if (existing) {
+          dispatch({ type: 'setActiveWorkspace', payload: existing.id })
+          void resolvedServices.thread.list(existing.id).then((threadsResult) => {
+            handleResult(threadsResult, (threads: Thread[]) => {
+              const merged = mergeThreadsForWorkspace(
+                state.threads,
+                existing.id,
+                threads,
+              )
+              dispatch({ type: 'setThreads', payload: sortThreads(merged) })
+            })
+          })
+          void resolvedServices.worktree.list().then((worktreeResult) => {
+            handleResult(worktreeResult, (snapshot) => {
+              dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
+            })
+          })
+          setInfo(`Workspace ${existing.name} is already open.`)
+          return
+        }
+
         const result = await resolvedServices.workspace.create(name, path)
         handleResult(result, (workspace: Workspace) => {
-          dispatch({ type: 'setWorkspaces', payload: [...state.workspaces, workspace] })
+          const alreadyKnown = state.workspaces.some((item) => item.id === workspace.id)
+          const nextWorkspaces = alreadyKnown
+            ? state.workspaces
+            : [...state.workspaces, workspace]
+          dispatch({ type: 'setWorkspaces', payload: nextWorkspaces })
           dispatch({ type: 'setActiveWorkspace', payload: workspace.id })
-          setInfo(`Workspace ${workspace.name} created.`)
+          dispatch({ type: 'setActiveThread', payload: null })
+          void resolvedServices.thread.list(workspace.id).then((threadsResult) => {
+            handleResult(threadsResult, (threads: Thread[]) => {
+              const merged = mergeThreadsForWorkspace(
+                state.threads,
+                workspace.id,
+                threads,
+              )
+              dispatch({ type: 'setThreads', payload: sortThreads(merged) })
+            })
+          })
+          void resolvedServices.worktree.list().then((worktreeResult) => {
+            handleResult(worktreeResult, (snapshot) => {
+              dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
+            })
+          })
+          dispatch({ type: 'setMessages', payload: [] })
+          setInfo(
+            alreadyKnown
+              ? `Workspace ${workspace.name} is already open.`
+              : `Workspace ${workspace.name} created.`,
+          )
         })
       },
 
@@ -333,10 +440,30 @@ export const AppStoreProvider = ({
         const result = await resolvedServices.workspace.remove(workspaceId)
         handleResult(result, () => {
           const remaining = state.workspaces.filter((ws) => ws.id !== workspaceId)
+          const remainingThreads = state.threads.filter(
+            (thread) => thread.workspaceId !== workspaceId,
+          )
           dispatch({ type: 'setWorkspaces', payload: remaining })
+          dispatch({ type: 'setThreads', payload: remainingThreads })
+
           if (state.activeWorkspaceId === workspaceId) {
             dispatch({ type: 'setActiveWorkspace', payload: remaining[0]?.id ?? null })
           }
+
+          const activeThreadStillExists = remainingThreads.some(
+            (thread) => thread.id === state.activeThreadId,
+          )
+          if (!activeThreadStillExists) {
+            dispatch({ type: 'setActiveThread', payload: null })
+            dispatch({ type: 'setMessages', payload: [] })
+          }
+
+          void resolvedServices.worktree.list().then((worktreeResult) => {
+            handleResult(worktreeResult, (snapshot) => {
+              dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
+            })
+          })
+
           setInfo(`Workspace removed.`)
         })
       },
@@ -348,29 +475,107 @@ export const AppStoreProvider = ({
       async loadThreads(workspaceId) {
         const result = await resolvedServices.thread.list(workspaceId)
         handleResult(result, (threads: Thread[]) => {
-          dispatch({ type: 'setThreads', payload: threads })
+          const mergedThreads = mergeThreadsForWorkspace(
+            state.threads,
+            workspaceId,
+            threads,
+          )
+          dispatch({ type: 'setThreads', payload: sortThreads(mergedThreads) })
         })
       },
 
-      async createThread(workspaceId, title) {
-        const result = await resolvedServices.thread.create(workspaceId, title)
+      async createThread(workspaceId, input) {
+        const result = await resolvedServices.thread.create(workspaceId, input)
         handleResult(result, (thread: Thread) => {
-          dispatch({ type: 'addThread', payload: thread })
+          dispatch({
+            type: 'setThreads',
+            payload: sortThreads([...state.threads, thread]),
+          })
+          dispatch({ type: 'setActiveWorkspace', payload: workspaceId })
           dispatch({ type: 'setActiveThread', payload: thread.id })
           dispatch({ type: 'setMessages', payload: [] })
+          void resolvedServices.worktree
+            .switch(thread.worktreeId)
+            .then((worktreeResult) => {
+              handleResult(worktreeResult, (snapshot) => {
+                dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
+              })
+            })
           setInfo(`Thread "${thread.title}" created.`)
+        })
+      },
+
+      async activateThread(workspaceId, threadId) {
+        if (workspaceId !== state.activeWorkspaceId) {
+          dispatch({ type: 'setActiveWorkspace', payload: workspaceId })
+        }
+
+        let targetThread = state.threads.find((thread) => thread.id === threadId)
+
+        if (!targetThread || targetThread.workspaceId !== workspaceId) {
+          const listResult = await resolvedServices.thread.list(workspaceId)
+          if (!listResult.ok) {
+            setError(listResult.error.message)
+            return
+          }
+
+          setError(null)
+          const mergedThreads = mergeThreadsForWorkspace(
+            state.threads,
+            workspaceId,
+            listResult.data,
+          )
+          dispatch({ type: 'setThreads', payload: sortThreads(mergedThreads) })
+          targetThread = listResult.data.find((thread) => thread.id === threadId)
+        }
+
+        if (!targetThread) {
+          setError(`Thread ${threadId} was not found in workspace ${workspaceId}.`)
+          return
+        }
+
+        dispatch({ type: 'setActiveThread', payload: targetThread.id })
+
+        const [messagesResult, worktreeResult] = await Promise.all([
+          resolvedServices.chat.listMessages(targetThread.id),
+          resolvedServices.worktree.switch(targetThread.worktreeId),
+        ])
+
+        handleResult(messagesResult, (messages: ChatMessage[]) => {
+          dispatch({ type: 'setMessages', payload: messages })
+        })
+
+        handleResult(worktreeResult, (snapshot) => {
+          dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
         })
       },
 
       async removeThread(threadId) {
         const result = await resolvedServices.thread.remove(threadId)
         handleResult(result, () => {
-          const remaining = state.threads.filter((t) => t.id !== threadId)
+          const remaining = sortThreads(state.threads.filter((t) => t.id !== threadId))
           dispatch({ type: 'setThreads', payload: remaining })
           if (state.activeThreadId === threadId) {
             dispatch({ type: 'setActiveThread', payload: remaining[0]?.id ?? null })
             dispatch({ type: 'setMessages', payload: [] })
+
+            const nextThread = remaining[0]
+            if (nextThread) {
+              void resolvedServices.worktree
+                .switch(nextThread.worktreeId)
+                .then((worktreeResult) => {
+                  handleResult(worktreeResult, (snapshot) => {
+                    dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
+                  })
+                })
+            }
           }
+
+          void resolvedServices.worktree.list().then((worktreeResult) => {
+            handleResult(worktreeResult, (snapshot) => {
+              dispatch({ type: 'setWorktreeSnapshot', payload: snapshot })
+            })
+          })
           setInfo(`Thread removed.`)
         })
       },

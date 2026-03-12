@@ -7,7 +7,7 @@ describe('app shell integration', () => {
   it('renders the main layout with sidebar and chat', async () => {
     renderApp({ initialPath: '/chat' })
 
-    expect(await screen.findByText('Threads')).toBeInTheDocument()
+    expect(await screen.findByText('Workspaces')).toBeInTheDocument()
     expect(await screen.findByText("Let's build")).toBeInTheDocument()
   })
 
@@ -43,11 +43,30 @@ describe('app shell integration', () => {
     expect(await screen.findByText('rocknroll')).toBeInTheDocument()
   })
 
+  it('opens workspace modal and adds workspace from folder path', async () => {
+    const user = userEvent.setup()
+    renderApp({ initialPath: '/chat' })
+
+    await user.click(await screen.findByRole('button', { name: 'Open workspace' }))
+    expect(await screen.findByText('Open Workspace')).toBeInTheDocument()
+
+    const pathInput = await screen.findByLabelText('Workspace folder path')
+    await user.type(pathInput, '/workspace/new-app')
+
+    await user.click(await screen.findByRole('button', { name: 'Add workspace' }))
+    expect(await screen.findByText('new-app')).toBeInTheDocument()
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Workspace new-app created',
+    )
+  })
+
   it('creates a new thread and sends a message', async () => {
     const user = userEvent.setup()
     renderApp({ initialPath: '/chat' })
 
-    const newThreadButton = await screen.findByRole('button', { name: '+ New thread' })
+    const newThreadButton = await screen.findByRole('button', {
+      name: 'Create thread in rocknroll',
+    })
     await user.click(newThreadButton)
 
     const titleInput = await screen.findByPlaceholderText('Thread title...')
@@ -68,7 +87,7 @@ describe('app shell integration', () => {
     const user = userEvent.setup()
     renderApp({ initialPath: '/chat' })
 
-    await user.click(await screen.findByRole('button', { name: /open/i }))
+    await user.click(await screen.findByRole('button', { name: /^open$/i }))
     expect(await screen.findByText('VS Code')).toBeInTheDocument()
 
     await user.click(await screen.findByRole('button', { name: /commit/i }))
@@ -82,7 +101,7 @@ describe('app shell integration', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Toggle terminal' }))
     expect(await screen.findByText('Terminal')).toBeInTheDocument()
-    expect(await screen.findByText('main-session-1')).toBeInTheDocument()
+    expect(await screen.findByText(/session-1/)).toBeInTheDocument()
 
     await user.click(await screen.findByRole('button', { name: 'Toggle diff' }))
     expect(await screen.findByText('Branch')).toBeInTheDocument()

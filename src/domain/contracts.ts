@@ -76,18 +76,27 @@ export interface Workspace {
   name: string
   path: string
   gitBranch: string
+  localWorktreeId: string
   createdAt: string
 }
 
 export type ThreadStatus = 'active' | 'completed' | 'failed' | 'paused'
+export type ThreadLocation = 'local' | 'worktree'
 
 export interface Thread {
   id: string
   workspaceId: string
+  location: ThreadLocation
+  worktreeId: string
   title: string
   status: ThreadStatus
   createdAt: string
   updatedAt: string
+}
+
+export interface CreateThreadInput {
+  title: string
+  location: ThreadLocation
 }
 
 export type ChatRole = 'user' | 'assistant' | 'system'

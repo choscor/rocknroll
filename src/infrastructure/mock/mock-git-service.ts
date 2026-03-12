@@ -1,6 +1,13 @@
 import type { GitService } from '../../repository/interfaces'
 import type { PullRequestSummary } from '../../domain/contracts'
-import { clone, err, nowIso, ok, type MockDatabase } from './mock-database'
+import {
+  clone,
+  err,
+  nowIso,
+  ok,
+  persistDatabase,
+  type MockDatabase,
+} from './mock-database'
 
 const shortSha = (n: number): string => n.toString(16).padStart(7, '0').slice(-7)
 
@@ -63,6 +70,7 @@ export class MockGitService implements GitService {
     }
 
     this.db.counters.commit += 1
+    persistDatabase(this.db)
 
     return ok({
       sha: shortSha(this.db.counters.commit),
@@ -100,6 +108,7 @@ export class MockGitService implements GitService {
     }
 
     this.db.pullRequests.unshift(pr)
+    persistDatabase(this.db)
 
     return ok(clone(pr))
   }
