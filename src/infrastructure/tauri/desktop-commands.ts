@@ -21,7 +21,7 @@ const runtimeUnavailableError = <T>(): CommandResult<T> => ({
   },
 })
 
-const isTauriRuntime = (): boolean =>
+export const isTauriRuntime = (): boolean =>
   typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 
 const invokeCommand = async <T>(
@@ -77,8 +77,16 @@ export const desktopCommands = {
     })
   },
 
-  createTerminalSession(worktreeId: string): Promise<CommandResult<TerminalSession>> {
-    return invokeCommand<TerminalSession>('create_terminal_session', { worktreeId })
+  createTerminalSession(
+    worktreeId: string,
+    cwd?: string,
+    shell?: string,
+  ): Promise<CommandResult<TerminalSession>> {
+    return invokeCommand<TerminalSession>('create_terminal_session', {
+      worktreeId,
+      cwd,
+      shell,
+    })
   },
 
   listTerminalSessions(): Promise<CommandResult<TerminalSession[]>> {
@@ -92,6 +100,18 @@ export const desktopCommands = {
     return invokeCommand<TerminalSession>('write_terminal_session', {
       sessionId,
       input,
+    })
+  },
+
+  resizeTerminalSession(
+    sessionId: string,
+    cols: number,
+    rows: number,
+  ): Promise<CommandResult<TerminalSession>> {
+    return invokeCommand<TerminalSession>('resize_terminal_session', {
+      sessionId,
+      cols,
+      rows,
     })
   },
 

@@ -69,6 +69,8 @@ export interface TerminalSession {
   createdAt: string
   history: string[]
   lastOutput: string
+  cwd?: string
+  shell?: string
 }
 
 export interface Workspace {
