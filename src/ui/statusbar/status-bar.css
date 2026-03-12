@@ -1,0 +1,48 @@
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 28px;
+  min-height: 28px;
+  background: #16162b;
+  border-top: 1px solid #2a2a45;
+  font-size: 0.7rem;
+  color: #a0a0b8;
+}
+
+.status-bar-left,
+.status-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-bar-toggle {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.status-bar-toggle button {
+  padding: 1px 8px;
+  background: transparent;
+  border: 1px solid #2a2a45;
+  color: #a0a0b8;
+  cursor: pointer;
+  font-size: 0.65rem;
+  transition: all 150ms ease;
+}
+
+.status-bar-toggle button:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.status-bar-toggle button:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.status-bar-toggle button.active {
+  background: #4a9eff;
+  color: #fff;
+  border-color: #4a9eff;
+}

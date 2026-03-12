@@ -2,10 +2,11 @@ html,
 body,
 #root {
   min-height: 100%;
+  margin: 0;
 }
 
 a {
-  color: #1f4f9f;
+  color: #4a9eff;
 }
 
 h3,

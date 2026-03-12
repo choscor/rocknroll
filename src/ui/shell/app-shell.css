@@ -1,0 +1,143 @@
+:root {
+  --surface: #1a1a2e;
+  --surface-sidebar: #16162b;
+  --surface-input: #1e1e38;
+  --ink: #e0e0e8;
+  --ink-muted: #a0a0b8;
+  --accent: #4a9eff;
+  --success: #4ade80;
+  --danger: #f87171;
+  --border: #2a2a45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Avenir Next', 'Segoe UI', 'Franklin Gothic Medium', sans-serif;
+  color: var(--ink);
+  background: var(--surface);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 48px 1fr auto 28px;
+  min-height: 100vh;
+}
+
+.app-shell.sidebar-collapsed {
+  grid-template-columns: 0 1fr;
+}
+
+.app-shell > .sidebar {
+  grid-row: 1 / -1;
+  grid-column: 1;
+}
+
+.app-shell > .topbar {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.app-shell > .app-content {
+  grid-column: 2;
+  grid-row: 2;
+  overflow-y: auto;
+  background: var(--surface);
+}
+
+.app-shell > .chat-input {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.app-shell > .status-bar {
+  grid-column: 2;
+  grid-row: 4;
+}
+
+.banner-stack {
+  display: grid;
+  gap: 8px;
+  padding: 8px 16px 0;
+}
+
+.banner {
+  border-radius: 8px;
+  padding: 8px 12px;
+  border: 1px solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.banner button {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 0.75rem;
+}
+
+.banner-error {
+  border-color: rgba(248, 113, 113, 0.3);
+  background-color: rgba(248, 113, 113, 0.1);
+  color: var(--danger);
+}
+
+.banner-info {
+  border-color: rgba(74, 222, 128, 0.3);
+  background-color: rgba(74, 222, 128, 0.1);
+  color: var(--success);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+@keyframes messageSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 0 1fr;
+  }
+
+  .app-shell > .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+  }
+
+  .app-shell:not(.sidebar-collapsed) > .sidebar {
+    transform: translateX(0);
+  }
+}
