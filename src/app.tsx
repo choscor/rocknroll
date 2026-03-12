@@ -1,7 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './ui/shell/app-shell'
-import { AutomationPage } from './ui/pages/automation-page'
-import { SkillsPage } from './ui/pages/skills-page'
 import { SettingsPage } from './ui/settings/settings-page'
 import { ChatView } from './ui/chat/chat-view'
 import { AppStoreProvider } from './state/app-store-context'
@@ -14,8 +12,6 @@ export const AppRoutes = () => {
         <Route path="/chat" element={<ChatView />} />
         <Route path="/workspace/:workspaceId" element={<ChatView />} />
         <Route path="/workspace/:workspaceId/thread/:threadId" element={<ChatView />} />
-        <Route path="/automations" element={<AutomationPage />} />
-        <Route path="/skills" element={<SkillsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
 
         {/* Backward compatibility redirects */}
@@ -23,7 +19,9 @@ export const AppRoutes = () => {
         <Route path="/workspace" element={<Navigate replace to="/chat" />} />
         <Route path="/git" element={<Navigate replace to="/chat" />} />
         <Route path="/terminal" element={<Navigate replace to="/chat" />} />
-        <Route path="/automation" element={<Navigate replace to="/automations" />} />
+        <Route path="/automation" element={<Navigate replace to="/chat" />} />
+        <Route path="/automations" element={<Navigate replace to="/chat" />} />
+        <Route path="/skills" element={<Navigate replace to="/chat" />} />
       </Route>
     </Routes>
   )

@@ -1,8 +1,9 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Settings2 } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '../../state/app-store-context'
 import { OpenWorkspaceButton } from './open-workspace-button'
-import { SidebarNav } from './sidebar-nav'
 import { WorkspaceList } from './workspace-list'
 
 export const Sidebar = () => {
@@ -22,12 +23,8 @@ export const Sidebar = () => {
           data-tauri-drag-region
         />
 
-        <div className="space-y-4 px-3 py-3">
-          <SidebarNav />
-        </div>
-
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="text-xs font-medium tracking-wide text-sidebar-foreground/60">
+          <div className="text-sm font-semibold tracking-wide text-sidebar-foreground/70">
             Workspaces
           </div>
           <OpenWorkspaceButton />
@@ -36,6 +33,21 @@ export const Sidebar = () => {
         <ScrollArea className="min-h-0 flex-1 px-2 pb-3">
           <WorkspaceList />
         </ScrollArea>
+
+        <div className="border-t border-sidebar-border/70 p-3">
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                isActive && 'bg-sidebar-accent text-sidebar-accent-foreground',
+              )
+            }
+          >
+            <Settings2 className="size-4" />
+            Settings
+          </NavLink>
+        </div>
       </div>
     </aside>
   )

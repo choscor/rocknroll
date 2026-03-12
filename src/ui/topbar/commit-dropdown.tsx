@@ -22,7 +22,7 @@ export const CommitDropdown = () => {
         render={(
           <Button
             variant="outline"
-            className="h-8 rounded-xl border border-border/70 bg-background px-3 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60"
+            className="h-8 rounded-xl border border-border/70 bg-background px-3 text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:bg-muted/60"
             disabled={disabled}
           />
         )}
