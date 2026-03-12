@@ -6,14 +6,14 @@ export const WorkspaceList = () => {
 
   if (state.workspaces.length === 0) {
     return (
-      <div style={{ padding: '12px 20px', color: '#a0a0b8', fontSize: '0.8rem' }}>
+      <div className="rounded-lg px-3 py-2 text-sm text-muted-foreground">
         No workspaces yet.
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '4px 0' }}>
+    <div className="space-y-1">
       {state.workspaces.map((workspace) => (
         <WorkspaceItem key={workspace.id} workspace={workspace} />
       ))}

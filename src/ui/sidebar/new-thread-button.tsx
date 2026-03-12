@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useAppStore } from '../../state/app-store-context'
 
 export const NewThreadButton = () => {
@@ -15,8 +17,8 @@ export const NewThreadButton = () => {
 
   if (showInput) {
     return (
-      <div className="new-thread-input" style={{ padding: '8px 16px' }}>
-        <input
+      <div className="grid gap-2 px-1">
+        <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => {
@@ -25,41 +27,35 @@ export const NewThreadButton = () => {
           }}
           placeholder="Thread title..."
           autoFocus
-          style={{
-            width: '100%',
-            padding: '6px 10px',
-            background: '#1e1e38',
-            border: '1px solid #3a3a55',
-            borderRadius: '6px',
-            color: '#e0e0e8',
-            fontSize: '0.85rem',
-            outline: 'none',
-          }}
+          className="h-9 bg-background/70"
         />
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleCreate}
+            disabled={!title.trim() || !state.activeWorkspaceId}
+          >
+            Create
+          </Button>
+          <Button type="button" size="sm" variant="ghost" onClick={() => setShowInput(false)}>
+            Cancel
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '8px 16px' }}>
-      <button
+    <div className="px-1">
+      <Button
         type="button"
         onClick={() => setShowInput(true)}
         disabled={!state.activeWorkspaceId}
-        style={{
-          width: '100%',
-          padding: '8px 12px',
-          background: '#4a9eff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontWeight: 600,
-          fontSize: '0.85rem',
-        }}
+        className="h-9 w-full justify-start rounded-xl bg-sidebar-primary px-3 text-sidebar-primary-foreground shadow-sm hover:bg-sidebar-primary/90"
       >
         + New thread
-      </button>
+      </Button>
     </div>
   )
 }

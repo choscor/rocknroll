@@ -1,26 +1,13 @@
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { Thread } from '../../domain/contracts'
 import { useAppStore } from '../../state/app-store-context'
+import { formatRelativeTime } from '../shared/format-relative-time'
 
 interface ThreadItemProps {
   thread: Thread
   workspaceId: string
-}
-
-const formatRelativeTime = (dateStr: string): string => {
-  const now = Date.now()
-  const then = new Date(dateStr).getTime()
-  const diffMs = now - then
-  const diffMin = Math.floor(diffMs / 60000)
-
-  if (diffMin < 1) return 'just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-
-  const diffHours = Math.floor(diffMin / 60)
-  if (diffHours < 24) return `${diffHours}h ago`
-
-  const diffDays = Math.floor(diffHours / 24)
-  return `${diffDays}d ago`
 }
 
 export const ThreadItem = ({ thread, workspaceId }: ThreadItemProps) => {
@@ -35,36 +22,21 @@ export const ThreadItem = ({ thread, workspaceId }: ThreadItemProps) => {
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={handleClick}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '6px 20px',
-        background: isActive ? '#2a2a45' : 'transparent',
-        border: 'none',
-        borderLeft: isActive ? '2px solid #4a9eff' : '2px solid transparent',
-        color: isActive ? '#e0e0e8' : '#a0a0b8',
-        cursor: 'pointer',
-        fontSize: '0.8rem',
-        textAlign: 'left',
-        transition: 'all 150ms ease',
-      }}
+      className={cn(
+        'h-auto w-full justify-start gap-2 rounded-lg px-3 py-1.5 text-left',
+        isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/70',
+      )}
     >
-      <span style={{
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        flex: 1,
-      }}>
+      <span className={cn('truncate text-xs', isActive ? 'text-foreground' : 'text-muted-foreground')}>
         {thread.title}
       </span>
-      <span style={{ fontSize: '0.65rem', color: '#666', marginLeft: '8px', flexShrink: 0 }}>
+      <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
         {formatRelativeTime(thread.updatedAt)}
       </span>
-    </button>
+    </Button>
   )
 }

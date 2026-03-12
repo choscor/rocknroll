@@ -1,5 +1,12 @@
+import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useAppStore } from '../../state/app-store-context'
-import './status-bar.css'
 
 export const StatusBar = () => {
   const { state, actions } = useAppStore()
@@ -7,29 +14,36 @@ export const StatusBar = () => {
   const activeWorkspace = state.workspaces.find((ws) => ws.id === state.activeWorkspaceId)
 
   return (
-    <div className="status-bar">
-      <div className="status-bar-left">
-        <div className="status-bar-toggle">
-          <button
-            type="button"
-            className={state.settings.executionMode === 'local' ? 'active' : ''}
-            onClick={() => actions.updateSettings({ ...state.settings, executionMode: 'local' })}
-          >
-            Local
-          </button>
-          <button
-            type="button"
-            className={state.settings.executionMode === 'remote' ? 'active' : ''}
-            onClick={() => actions.updateSettings({ ...state.settings, executionMode: 'remote' })}
-          >
-            Remote
-          </button>
-        </div>
-        <span>Permissions: {state.settings.defaultPermissions}</span>
+    <div className="flex items-center justify-between border-t bg-background px-6 py-2 text-xs text-muted-foreground">
+      <div className="flex items-center gap-3">
+        <Select
+          value={state.settings.executionMode}
+          onValueChange={(value) => {
+            if (!value) {
+              return
+            }
+
+            actions.updateSettings({
+              ...state.settings,
+              executionMode: value as 'local' | 'remote',
+            })
+          }}
+        >
+          <SelectTrigger size="sm" className="h-7 rounded-lg">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="local">Local</SelectItem>
+            <SelectItem value="remote">Remote</SelectItem>
+          </SelectContent>
+        </Select>
+        <Badge variant="outline" className="h-6 rounded-md px-2">
+          Permissions: {state.settings.defaultPermissions}
+        </Badge>
       </div>
-      <div className="status-bar-right">
+      <div className="flex items-center gap-3">
         {activeWorkspace && (
-          <span>⎇ {activeWorkspace.gitBranch}</span>
+          <span className="font-medium">⎇ {activeWorkspace.gitBranch}</span>
         )}
         <span>{state.modelConfig.modelDisplayName}</span>
       </div>

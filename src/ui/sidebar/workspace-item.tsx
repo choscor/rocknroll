@@ -1,5 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronRight, Folder } from 'lucide-react'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { Workspace } from '../../domain/contracts'
 import { useAppStore } from '../../state/app-store-context'
 import { ThreadItem } from './thread-item'
@@ -14,6 +22,7 @@ export const WorkspaceItem = ({ workspace }: WorkspaceItemProps) => {
   const [expanded, setExpanded] = useState(state.activeWorkspaceId === workspace.id)
 
   const isActive = state.activeWorkspaceId === workspace.id
+  const isExpanded = expanded || isActive
   const workspaceThreads = state.threads.filter((t) => t.workspaceId === workspace.id)
 
   const handleClick = () => {
@@ -21,57 +30,34 @@ export const WorkspaceItem = ({ workspace }: WorkspaceItemProps) => {
       actions.setActiveWorkspace(workspace.id)
       void actions.loadThreads(workspace.id)
       void navigate(`/workspace/${workspace.id}`)
+      setExpanded(true)
+      return
     }
-    setExpanded(!expanded)
+
+    setExpanded((current) => !current)
   }
 
   return (
-    <div>
-      <button
-        type="button"
-        onClick={handleClick}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 20px',
-          background: isActive ? '#1e1e38' : 'transparent',
-          border: 'none',
-          color: isActive ? '#e0e0e8' : '#a0a0b8',
-          cursor: 'pointer',
-          fontSize: '0.85rem',
-          textAlign: 'left',
-          transition: 'all 150ms ease',
-        }}
-      >
-        <span style={{
-          display: 'inline-block',
-          transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-          transition: 'transform 200ms ease',
-          fontSize: '0.7rem',
-        }}>
-          ▶
+    <Collapsible open={isExpanded} onOpenChange={setExpanded}>
+      <CollapsibleTrigger render={<Button variant="ghost" className="h-auto w-full justify-start gap-2 rounded-xl px-3 py-2 text-left" /> } onClick={handleClick}>
+        <ChevronRight
+          className={cn('size-4 shrink-0 text-muted-foreground transition-transform', isExpanded && 'rotate-90')}
+        />
+        <Folder className={cn('size-4 shrink-0', isActive ? 'text-foreground' : 'text-muted-foreground')} />
+        <span className={cn('truncate text-sm', isActive ? 'font-medium text-foreground' : 'text-muted-foreground')}>
+          {workspace.name}
         </span>
-        <span style={{ fontWeight: isActive ? 600 : 400 }}>{workspace.name}</span>
-        <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: '#666' }}>
-          {workspace.gitBranch}
-        </span>
-      </button>
-
-      {expanded && (
-        <div style={{ paddingLeft: '12px', overflow: 'hidden', transition: 'all 200ms ease' }}>
-          {workspaceThreads.length === 0 ? (
-            <div style={{ padding: '6px 20px', color: '#666', fontSize: '0.75rem' }}>
-              No threads yet
-            </div>
-          ) : (
-            workspaceThreads.map((thread) => (
-              <ThreadItem key={thread.id} thread={thread} workspaceId={workspace.id} />
-            ))
-          )}
-        </div>
-      )}
-    </div>
+        <span className="ml-auto text-xs text-muted-foreground">{workspace.gitBranch}</span>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="space-y-1 pl-5 pr-1 pt-1">
+        {workspaceThreads.length === 0 ? (
+          <div className="px-3 py-1 text-xs text-muted-foreground">No threads yet</div>
+        ) : (
+          workspaceThreads.map((thread) => (
+            <ThreadItem key={thread.id} thread={thread} workspaceId={workspace.id} />
+          ))
+        )}
+      </CollapsibleContent>
+    </Collapsible>
   )
 }
