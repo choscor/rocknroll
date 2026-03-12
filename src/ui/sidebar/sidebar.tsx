@@ -19,7 +19,7 @@ export const Sidebar = () => {
     >
       <div className="flex h-full flex-col">
         <div
-          className="window-drag-region h-[52px] shrink-0 border-b border-sidebar-border/70"
+          className="window-drag-region h-[52px] shrink-0"
           data-tauri-drag-region
         />
 
@@ -34,7 +34,7 @@ export const Sidebar = () => {
           <WorkspaceList />
         </ScrollArea>
 
-        <div className="border-t border-sidebar-border/70 p-3">
+        <div className="p-3">
           <NavLink
             to="/settings"
             className={({ isActive }) =>
