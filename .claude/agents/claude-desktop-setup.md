@@ -5,19 +5,17 @@ tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 color: cyan
 skills:
-  - claude-agentic-setup
-  - claude-provider-connection
-  - claude-model-catalog
-  - claude-effort-policy
-  - claude-chat-orchestration
-  - claude-error-and-retry-handling
-  - claude-token-and-cost-guardrails
-  - claude-response-formatting
-  - claude-telemetry-and-logging
-  - settings-persistence
-  - tauri-command-wiring
-  - security-and-credentials-handling
-  - mock-service-maintenance
+  - task-decomposition
+  - repository-navigation
+  - context-management
+  - api-design
+  - dependency-management
+  - code-generation
+  - safe-code-modification
+  - workflow-execution
+  - build-and-run
+  - cli-usage
+  - git-operations
 ---
 
 # Claude Desktop Setup Agent
@@ -54,19 +52,17 @@ existing architecture and naming conventions.
 
 ## Use These Skills When Applicable
 
-- `.claude/skills/claude-agentic-setup/SKILL.md`
-- `.claude/skills/claude-provider-connection/SKILL.md`
-- `.claude/skills/claude-model-catalog/SKILL.md`
-- `.claude/skills/claude-effort-policy/SKILL.md`
-- `.claude/skills/claude-chat-orchestration/SKILL.md`
-- `.claude/skills/claude-error-and-retry-handling/SKILL.md`
-- `.claude/skills/claude-token-and-cost-guardrails/SKILL.md`
-- `.claude/skills/claude-response-formatting/SKILL.md`
-- `.claude/skills/claude-telemetry-and-logging/SKILL.md`
-- `.claude/skills/settings-persistence/SKILL.md`
-- `.claude/skills/tauri-command-wiring/SKILL.md`
-- `.claude/skills/security-and-credentials-handling/SKILL.md`
-- `.claude/skills/mock-service-maintenance/SKILL.md`
+- `.claude/skills/workflow/task-decomposition/SKILL.md`
+- `.claude/skills/environment/repository-navigation/SKILL.md`
+- `.claude/skills/agent/context-management/SKILL.md`
+- `.claude/skills/architecture/api-design/SKILL.md`
+- `.claude/skills/architecture/dependency-management/SKILL.md`
+- `.claude/skills/core/code-generation/SKILL.md`
+- `.claude/skills/agent/safe-code-modification/SKILL.md`
+- `.claude/skills/agent/workflow-execution/SKILL.md`
+- `.claude/skills/environment/build-and-run/SKILL.md`
+- `.claude/skills/environment/cli-usage/SKILL.md`
+- `.claude/skills/environment/git-operations/SKILL.md`
 
 ## Requirements
 

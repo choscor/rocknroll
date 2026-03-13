@@ -32,6 +32,7 @@ Do not mix responsibilities across layers.
 - Prefer editing existing files; avoid unnecessary new files.
 - Do not duplicate validation, queries, or utility functions.
 - Keep functions small and focused; avoid deep nesting.
+- Prefer targeted edits instead of rewriting entire files.
 
 ## Architecture Consistency
 

@@ -11,7 +11,8 @@ mock vs real service flow).
 ## Required Workflow
 
 1. Read `README.md`, `CLAUDE.md`, and `AGENTS.md` before edits.
-2. Read `.claude/skills/claude-agentic-setup/references/scaffold-map.md`.
+2. Identify the relevant UI, state, service, and Tauri boundaries from the repo
+   structure (`README.md`, `src/`, `src-tauri/`).
 3. Confirm integration target:
    - Mock-only
    - Tauri-backed Claude calls
