@@ -54,7 +54,7 @@ Claude should prefer **extending existing modules rather than creating new ones*
 When analyzing the project, Claude should prioritize reading:
 
 1. README.md
-2. ARCHITECTURE.md
+2. ARCHITECTURE.md (if present)
 3. AGENTS.md
 4. src/ main modules
 5. configuration files
