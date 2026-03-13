@@ -7,9 +7,11 @@
 
       "Bash(ls *)",
       "Bash(cat *)",
+      "Bash(python3 *)",
       "Bash(git status)",
       "Bash(git diff)",
       "Bash(git log *)",
+      "Bash(git branch --show-current)",
 
       "WebSearch",
 

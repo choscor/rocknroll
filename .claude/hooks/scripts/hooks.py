@@ -2,6 +2,12 @@ import os
 import json
 import datetime
 from pathlib import Path
+from contextlib import contextmanager
+
+try:
+    import fcntl
+except ImportError:  # Windows or restricted envs.
+    fcntl = None
 
 PROJECT_DIR = os.getenv("CLAUDE_PROJECT_DIR", ".")
 HOOK_EVENT = os.getenv("CLAUDE_HOOK_EVENT", "unknown")
@@ -12,6 +18,23 @@ STATE_DIR = BASE_DIR / "state"
 
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 STATE_DIR.mkdir(parents=True, exist_ok=True)
+
+STATE_LOCK_FILE = STATE_DIR / ".lock"
+
+
+@contextmanager
+def state_lock():
+    """Best-effort lock for state updates to avoid lost writes."""
+    if fcntl is None:
+        yield
+        return
+
+    with open(STATE_LOCK_FILE, "w") as lock_file:
+        fcntl.flock(lock_file, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
 
 
 def log_event(event, data=None):
@@ -42,9 +65,11 @@ def load_state():
 def save_state(state):
     """Save session state."""
     state_file = STATE_DIR / "session.json"
+    tmp_file = state_file.with_name(state_file.name + ".tmp")
 
-    with open(state_file, "w") as f:
+    with open(tmp_file, "w") as f:
         json.dump(state, f, indent=2)
+    os.replace(tmp_file, state_file)
 
 
 def on_session_start():
@@ -53,17 +78,18 @@ def on_session_start():
         "tool_calls": 0,
         "files_modified": []
     }
-
-    save_state(state)
+    with state_lock():
+        save_state(state)
 
     log_event("SessionStart", state)
 
 
 def on_pre_tool_use():
-    state = load_state()
+    with state_lock():
+        state = load_state()
 
-    state["tool_calls"] = state.get("tool_calls", 0) + 1
-    save_state(state)
+        state["tool_calls"] = state.get("tool_calls", 0) + 1
+        save_state(state)
 
     log_event("PreToolUse", state)
 
@@ -73,7 +99,8 @@ def on_post_tool_use():
 
 
 def on_task_completed():
-    state = load_state()
+    with state_lock():
+        state = load_state()
 
     report = {
         "summary": "Task completed",
@@ -90,7 +117,8 @@ def on_task_completed():
 
 
 def on_session_end():
-    state = load_state()
+    with state_lock():
+        state = load_state()
 
     duration = "unknown"
     if "session_start" in state:
