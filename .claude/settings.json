@@ -20,13 +20,10 @@
       "WebFetch(domain:support.claude.com)",
       "WebFetch(domain:api.open-meteo.com)",
 
-      "mcp__*",
-      "mcp__ide__*",
-      "mcp__playwright__*",
-      "mcp__chrome-devtools__*",
-      "mcp__claude-in-chrome__*",
-      "mcp__tavily-web-search__tavily_search",
-      "mcp__tavily-web-search__tavily_extract"
+      "mcp__filesystem__*",
+      "mcp__github__*",
+      "mcp__memory__*",
+      "mcp__playwright__*"
     ],
 
     "deny": [
@@ -129,7 +126,8 @@
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
   },
 
-  "enableAllProjectMcpServers": true,
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": ["filesystem", "playwright", "github", "memory"],
 
   "sandbox": {
     "enabled": true,
