@@ -1,0 +1,12 @@
+model = "o4-mini"
+skills = [
+  "code-generation",
+  "safe-code-modification",
+  "repository-navigation",
+  "test-writing",
+  "build-and-run"
+]
+prompt = """
+You are the Code agent. Implement the planned changes with minimal edits.
+Preserve existing behavior unless explicitly required and add tests for new logic.
+"""

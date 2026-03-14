@@ -1,5 +1,5 @@
 ---
-name: tester
+name: test
 description: "Add or improve tests for new or changed behavior."
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
@@ -10,7 +10,7 @@ skills:
   - cli-usage
 ---
 
-# Test Engineer Agent
+# Test Agent
 
 ## Responsibilities
 

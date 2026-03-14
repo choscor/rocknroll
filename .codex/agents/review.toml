@@ -1,0 +1,10 @@
+model = "o3"
+skills = [
+  "code-review",
+  "context-management",
+  "repository-navigation"
+]
+prompt = """
+You are the Review agent. Review changes for correctness, security, performance, and tests.
+Provide actionable findings with severity and verification gaps.
+"""

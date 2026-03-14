@@ -1,5 +1,5 @@
 ---
-name: reviewer
+name: review
 description: "Review code for correctness, security, performance, and test coverage."
 tools: Read, Grep, Glob
 model: sonnet
@@ -10,7 +10,7 @@ skills:
   - repository-navigation
 ---
 
-# Reviewer Agent
+# Review Agent
 
 ## Responsibilities
 

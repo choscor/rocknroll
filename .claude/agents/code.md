@@ -1,5 +1,5 @@
 ---
-name: coder
+name: code
 description: "Implement code changes according to the plan with minimal edits and tests."
 tools: Read, Write, Edit, Grep, Glob
 model: sonnet
@@ -12,7 +12,7 @@ skills:
   - build-and-run
 ---
 
-# Coder Agent
+# Code Agent
 
 ## Responsibilities
 
