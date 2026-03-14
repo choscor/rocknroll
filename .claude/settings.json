@@ -1,0 +1,216 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(*)",
+      "Write(*)",
+      "NotebookEdit(*)",
+
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(python3 *)",
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git log *)",
+      "Bash(git branch --show-current)",
+
+      "WebSearch",
+
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:support.claude.com)",
+      "WebFetch(domain:api.open-meteo.com)",
+
+      "mcp__filesystem__*",
+      "mcp__github__*",
+      "mcp__memory__*",
+      "mcp__playwright__*"
+    ],
+
+    "deny": [
+      "Bash(git push *)",
+      "Read(.env)",
+      "Read(./secrets/**)"
+    ],
+
+    "ask": [
+      "Bash(rm *)",
+      "Bash(rmdir *)",
+      "Bash(shred *)",
+      "Bash(unlink *)",
+      "Bash(dd *)",
+      "Bash(mkfs *)",
+      "Bash(fdisk *)",
+
+      "Bash(chmod *)",
+      "Bash(chown *)",
+
+      "Bash(git *)",
+      "Bash(gh *)",
+
+      "Bash(npm *)",
+      "Bash(pnpm *)",
+      "Bash(yarn *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+
+      "Bash(docker *)",
+      "Bash(kubectl *)",
+      "Bash(firebase *)",
+      "Bash(gcloud *)",
+
+      "Bash(curl *)",
+      "Bash(wget *)",
+
+      "Bash(kill *)",
+      "Bash(killall *)",
+      "Bash(pkill *)",
+
+      "Bash(sudo *)"
+    ]
+  },
+
+  "behavior": {
+    "planBeforeCoding": true,
+    "preferMinimalChanges": true,
+    "explainChanges": true,
+    "readRepoBeforeEdit": true
+  },
+
+  "limits": {
+    "maxFilesPerEdit": 10,
+    "maxFileSizeKB": 500
+  },
+
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Exploring repository structure",
+      "Tracing code paths",
+      "Designing an implementation plan",
+      "Analyzing architecture",
+      "Reviewing diffs",
+      "Linking changes to tests",
+      "Preparing agent workflow",
+      "Validating implementation"
+    ]
+  },
+
+  "spinnerTipsEnabled": true,
+
+  "spinnerTipsOverride": {
+    "tips": [
+      "Ask the agent to create a plan before implementing large features.",
+      "Let the agent run project checks or tests before committing changes."
+    ],
+    "excludeDefault": true
+  },
+
+  "plansDirectory": "./.claude/plans",
+
+  "outputStyle": "Explanatory",
+
+  "statusLine": {
+    "type": "command",
+    "command": "echo \"claude-agent • $(git branch --show-current 2>/dev/null) • $(date '+%H:%M:%S')\"",
+    "padding": 0
+  },
+
+  "attribution": {
+    "commit": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "pr": "Generated with Claude Code"
+  },
+
+  "respectGitignore": true,
+
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
+  },
+
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": ["filesystem", "playwright", "github", "memory"],
+
+  "sandbox": {
+    "enabled": true,
+    "excludedCommands": ["git", "docker"],
+    "filesystem": {
+      "denyRead": ["./secrets/"],
+      "denyWrite": ["./.env"]
+    }
+  },
+
+  "disableAllHooks": false,
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
+            "timeout": 10000,
+            "async": true,
+            "once": true,
+            "statusMessage": "SessionStart"
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
+            "timeout": 5000,
+            "async": true,
+            "statusMessage": "PreToolUse"
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
+            "timeout": 5000,
+            "async": true,
+            "statusMessage": "PostToolUse"
+          }
+        ]
+      }
+    ],
+
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
+            "timeout": 5000,
+            "async": true,
+            "statusMessage": "TaskCompleted"
+          }
+        ]
+      }
+    ],
+
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
+            "timeout": 10000,
+            "async": true,
+            "once": true,
+            "statusMessage": "SessionEnd"
+          }
+        ]
+      }
+    ]
+  }
+}

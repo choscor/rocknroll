@@ -1,0 +1,94 @@
+# Codex CLI project configuration
+# Based on the recommended layout in the codex-cli-best-practice repo.
+
+model = "o4-mini"
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[profiles.conservative]
+sandbox_mode = "read-only"
+approval_policy = "untrusted"
+
+[profiles.development]
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[profiles.trusted]
+model = "o3"
+sandbox_mode = "workspace-write"
+approval_policy = "never"
+
+[profiles.review]
+model = "o3"
+sandbox_mode = "read-only"
+approval_policy = "on-request"
+
+[profiles.ci]
+model = "o4-mini"
+sandbox_mode = "read-only"
+approval_policy = "never"
+
+# Skills registry (Codex expects a folder that contains SKILL.md).
+[[skills.config]]
+path = ".agent/skills/workflow/task-decomposition"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/environment/repository-navigation"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/agent/context-management"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/agent/tool-selection"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/agent/workflow-execution"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/architecture/system-design"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/core/code-generation"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/agent/safe-code-modification"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/core/test-writing"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/environment/build-and-run"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/environment/cli-usage"
+enabled = true
+
+[[skills.config]]
+path = ".agent/skills/core/code-review"
+enabled = true
+
+[agents.orchestrator]
+description = "Coordinate plan -> code -> test -> review with clear handoffs and validation."
+config_file = "agents/orchestrator.toml"
+
+[agents.code]
+description = "Implement code changes according to the plan with minimal edits and tests."
+config_file = "agents/code.toml"
+
+[agents.test]
+description = "Add or improve tests for new or changed behavior."
+config_file = "agents/test.toml"
+
+[agents.review]
+description = "Review code for correctness, security, performance, and test coverage."
+config_file = "agents/review.toml"
