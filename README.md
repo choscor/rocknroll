@@ -11,6 +11,7 @@ Desktop app scaffold for an agentic development environment (Codex-Desktop style
   - `Git + PR` (diff, AI commit message, commit, create PR mock)
   - `Terminal` (session create/write/close)
   - `Automation` (placeholder surface)
+  - `Voice Prompting` (local microphone capture + Whisper transcription via Tauri commands/events)
 - Typed command envelope used across FE and Tauri commands:
   - `CommandResult<T> = { ok: true; data: T } | { ok: false; error: { code: string; message: string } }`
 - Mock service adapters and state store for clickable end-to-end flows
@@ -23,20 +24,29 @@ Desktop app scaffold for an agentic development environment (Codex-Desktop style
 - Node.js 22+
 - npm 10+
 - Rust 1.77+
+- CMake (required to build `whisper-rs-sys`)
 
 ### Tauri system dependencies
 
 - macOS: Xcode Command Line Tools
-- Windows: Visual Studio Build Tools + WebView2
+- Windows: Visual Studio Build Tools + WebView2 + CMake
 - Linux (Ubuntu/Debian):
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y \
+  build-essential \
+  cmake \
   libwebkit2gtk-4.1-dev \
   libappindicator3-dev \
   librsvg2-dev \
   patchelf
+```
+
+macOS (Homebrew):
+
+```bash
+brew install cmake
 ```
 
 ## Quick start
@@ -45,6 +55,11 @@ sudo apt-get install -y \
 npm i
 npm run tauri:dev
 ```
+
+First launch with voice enabled:
+
+- The app auto-downloads Whisper model `ggml-base.en.bin` (local only, no cloud STT).
+- Model and recordings are stored in the app data directory (not inside `src-tauri`, so dev mode does not auto-restart on each recording).
 
 Alternative web-only UI run:
 
@@ -71,6 +86,23 @@ npm run dev
 - `src/state/*`: app store + context/actions
 - `src/features/*`: page-level feature modules
 - `src-tauri/src/lib.rs`: native command stubs and Tauri setup
+- `src/hooks/useVoice.ts`: FE voice integration (invoke + listen events)
+- `src-tauri/src/commands/voice.rs`: `start_recording`, `stop_recording`, `transcribe_audio`
+- `src-tauri/src/audio/recorder.rs`: local microphone capture with `cpal` and WAV output
+- `src-tauri/src/stt/whisper.rs`: local Whisper inference via `whisper-rs`
+- `src-tauri/src/stt/model_download.rs`: first-run model download to app data
+
+## Voice-to-Text (local)
+
+This project runs speech-to-text fully local using `whisper-rs` + `cpal`:
+
+- Click mic -> `start_recording` starts microphone capture.
+- Click again -> `stop_recording` writes WAV file.
+- `transcribe_audio` runs Whisper in background and emits `voice_result`.
+- Frontend listens to `voice_result` and injects transcript into chat draft.
+- Frontend also listens to realtime `voice_level` for waveform animation while recording.
+
+No cloud speech API is used.
 
 ## Environment variables
 

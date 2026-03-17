@@ -15,6 +15,8 @@ dist-ssr
 # Tauri / Rust artifacts
 src-tauri/target
 src-tauri/gen
+# Local speech-to-text assets (downloaded at runtime)
+src-tauri/models/
 
 # Editor directories and files
 .vscode/*
