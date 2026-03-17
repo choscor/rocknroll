@@ -6,7 +6,11 @@ use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Mutex;
-use tauri::Emitter;
+use tauri::{Emitter, Manager};
+
+mod audio;
+mod commands;
+mod stt;
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -441,6 +445,16 @@ pub fn run() {
                         .build(),
                 )?;
             }
+            let model_path = app
+                .path()
+                .app_data_dir()?
+                .join(crate::stt::model_download::VOICE_DIR_NAME)
+                .join(crate::stt::model_download::MODEL_FILE_NAME);
+            tauri::async_runtime::spawn_blocking(move || {
+                if let Err(err) = crate::stt::model_download::ensure_model_exists_at(&model_path) {
+                    eprintln!("[voice] Failed to ensure Whisper model: {err}");
+                }
+            });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -453,7 +467,10 @@ pub fn run() {
             list_terminal_sessions,
             write_terminal_session,
             resize_terminal_session,
-            close_terminal_session
+            close_terminal_session,
+            crate::commands::voice::start_recording,
+            crate::commands::voice::stop_recording,
+            crate::commands::voice::transcribe_audio,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
