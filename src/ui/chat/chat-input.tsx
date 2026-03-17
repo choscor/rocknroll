@@ -1,5 +1,14 @@
-import { useState } from 'react'
-import { ArrowUp, Check, ChevronDown, Cpu, Gauge, Mic, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  ArrowUp,
+  Check,
+  ChevronDown,
+  Cpu,
+  Gauge,
+  LoaderCircle,
+  Mic,
+  Plus,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +21,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import type { EffortLevel } from '../../domain/contracts'
 import { useAppStore } from '../../state/app-store-context'
+import { useVoice } from '../../hooks/useVoice'
 
 const models = [
   { id: 'claude-opus-4-6', label: 'Opus 4.6' },
@@ -24,6 +34,20 @@ const efforts: EffortLevel[] = ['low', 'medium', 'high', 'extra-high']
 export const ChatInput = () => {
   const { state, actions } = useAppStore()
   const [draft, setDraft] = useState('')
+  const {
+    isRecording,
+    isTranscribing,
+    voiceLevel,
+    transcript,
+    startRecording,
+    stopRecording,
+  } = useVoice()
+
+  useEffect(() => {
+    if (transcript && !isRecording && !isTranscribing) {
+      setDraft((prev) => (prev ? `${prev} ${transcript}` : transcript))
+    }
+  }, [transcript, isRecording, isTranscribing])
 
   const handleSend = () => {
     const content = draft.trim()
@@ -51,6 +75,11 @@ export const ChatInput = () => {
       .split('-')
       .map((token) => token.charAt(0).toUpperCase() + token.slice(1))
       .join(' ')
+
+  const voiceStrength = Math.min(1, Math.sqrt(Math.max(0, voiceLevel)))
+  const waveformHeights = [0.25, 0.4, 0.6, 0.85, 1, 0.85, 0.6, 0.4, 0.25].map(
+    (multiplier) => Math.round(3 + 16 * voiceStrength * multiplier),
+  )
 
   return (
     <div className="bg-background px-5 pb-3 pt-4">
@@ -172,16 +201,50 @@ export const ChatInput = () => {
               </DropdownMenu>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              {isRecording && (
+                <span className="inline-flex items-center rounded-full bg-muted px-3 py-1">
+                  <span className="inline-flex h-5 items-end gap-[3px]" aria-hidden="true">
+                    {waveformHeights.map((height, index) => (
+                      <span
+                        key={`voice-wave-${index}`}
+                        className="w-[3px] rounded-full bg-red-500 transition-[height] duration-75"
+                        style={{ height: `${height}px` }}
+                      />
+                    ))}
+                  </span>
+                </span>
+              )}
               <Button
                 type="button"
                 size="icon-lg"
                 variant="ghost"
-                className="rounded-full text-muted-foreground"
+                className={`relative rounded-full text-muted-foreground transition ${
+                  isRecording ? 'bg-red-50 text-red-500 dark:bg-red-950/20' : ''
+                }`}
                 title="Voice input"
+                onClick={() => {
+                  if (!state.activeThreadId) return
+                  if (isRecording) {
+                    void stopRecording()
+                  } else {
+                    void startRecording()
+                  }
+                }}
+                disabled={!state.activeThreadId || isTranscribing}
               >
-                <Mic className="size-5" />
-                <span className="sr-only">Voice input</span>
+                {isTranscribing ? (
+                  <LoaderCircle className="size-5 animate-spin" />
+                ) : (
+                  <Mic className={`size-5 ${isRecording ? 'animate-pulse text-red-500' : ''}`} />
+                )}
+                <span className="sr-only">
+                  {isTranscribing
+                    ? 'Transcribing voice input'
+                    : isRecording
+                      ? 'Stop voice input'
+                      : 'Start voice input'}
+                </span>
               </Button>
               <Button
                 type="button"
